@@ -12,7 +12,7 @@ data Config = Config
   , keyPath :: !String
   , url :: !String
   , token :: !String
-  } deriving (Show, Generic)
+  } deriving (Eq, Show, Generic)
 
 instance FromJSON Config
 
