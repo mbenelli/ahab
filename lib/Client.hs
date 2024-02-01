@@ -19,6 +19,7 @@ import Servant.API (JSON, Header, QueryParam, type (:>), Get)
 import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
 
 import Config
+import Field
 
 -- Certificate handling
 
@@ -43,44 +44,87 @@ mkMngr hostName crtFile keyFile = do
 
 
 
--- API call
+-- API
+
+data IncludedFields = IncludedFields
+  { actuallyIncluded :: ![String]
+  , excluded :: ![String]
+  , includede :: ![String]
+  } deriving (Show, Generic)
+
+instance FromJSON IncludedFields
+
+
+--data Field = Field
+--  { self :: !String
+--  , value :: !String
+--  --, id :: !String
+--  , disabled :: !Bool
+--  } deriving (Show, Generic)
+
+
+
+data IssueBean = IssueBean
+  {
+  -- changelog :: !String -- PageOfChangelogs
+  --, editmeta :: !String -- IssueUpdateMetadata
+  --, expand_ :: !String
+  fields :: !(Maybe [Field])
+  , fieldsToInclude :: !(Maybe IncludedFields)
+  --,
+  , id :: !String
+  , key :: !String
+  --, names_ :: !String -- JSON
+  --, operation :: !String -- Operations
+  --, properties :: !String -- JSON
+  --, renderedFields :: !String -- JSON
+  --, schema_ :: !String -- JSON
+  --, self :: !String
+  --, transitions :: !String -- [IssueTransition]
+  --, versionedRepresentation :: !String -- JSON
+  } deriving (Show, Generic)
+
+instance FromJSON IssueBean
 
 data SearchResponse = SearchResponse
   { expand :: !String
-  , issues :: !String -- JSON
-  , maxResult :: !Int
-  , names :: !String  -- JSON
-  , schema :: !String -- JSON
+  , issues :: ![IssueBean]
+  , maxResults :: !Int
+--  , names :: !String  -- JSON
+--  , schema :: !String -- JSON
   , startAt :: !Integer
   , total :: !Integer
-  , warningMessage :: ![String]
+  , warningMessage :: !(Maybe [String])
   } deriving (Show, Generic)
 
 instance FromJSON SearchResponse
 
 
 type API = "rest" :> "api" :> "2" :> "search"
-  :> QueryParam "jql" String :> Header "Authorization" String :> Get '[JSON] SearchResponse
+  :> QueryParam "jql" String
+  :> QueryParam "maxResults" Int
+  :> QueryParam "fields" String
+  :> QueryParam "fieldsByKeys" Bool
+  :> Header "Authorization" String :> Get '[JSON] SearchResponse
 
 
 api :: Proxy API
 api = Proxy
 
-search :: Maybe String -> Maybe String -> ClientM SearchResponse
+search :: Maybe String -> Maybe Int -> Maybe String -> Maybe Bool -> Maybe String -> ClientM SearchResponse
 search = client api
 
 query :: String -> String -> ClientM SearchResponse
-query q t = search (Just q) (Just ("Bearer " ++ t))
+query q t = search (Just q) (Just 1) (Just "*all") (Just True) (Just ("Bearer " ++ t))
 
 run' :: Config -> IO ()
 run' cfg = do
   manager' <- mkMngr "issue.swf.daimler.com" (crtPath cfg) (keyPath cfg)
   u <- parseBaseUrl (url cfg) 
-  res <- runClientM (query "type = Epic" (token cfg)) (mkClientEnv manager' u)
+  res <- runClientM (query "type = Story" (token cfg)) (mkClientEnv manager' u)
   case res of
     Left err -> putStrLn $ "Error: " ++ show err
-    Right s -> do
-      print (total s)
+    Right s -> print s
 
 run :: IO ()
 run = do
