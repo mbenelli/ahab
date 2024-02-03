@@ -11,7 +11,7 @@ import Data.Proxy (Proxy(..))
 import GHC.Generics (Generic)
 import Network.Connection (TLSSettings(TLSSettings))
 import Network.HTTP.Client (newManager, Manager)
-import Network.HTTP.Client.TLS (mkManagerSettings)
+import Network.HTTP.Client.TLS (mkManagerSettings, newTlsManager)
 import Network.TLS (credentialLoadX509, onCertificateRequest, onServerCertificate,
                     clientHooks, clientSupported, supportedCiphers, defaultParamsClient) 
 import Network.TLS.Extra.Cipher (ciphersuite_strong)
@@ -21,13 +21,9 @@ import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
 import Config
 import Field
 
+
 -- Certificate handling
 
---crtPath :: FilePath
---crtPath = "tls.crt"
---
---keyPath :: FilePath
---keyPath = "tls.key"
 
 mkMngr :: String ->  FilePath -> FilePath -> IO Manager
 mkMngr hostName crtFile keyFile = do
@@ -105,30 +101,40 @@ type API = "rest" :> "api" :> "2" :> "search"
   :> QueryParam "maxResults" Int
   :> QueryParam "fields" String
   :> QueryParam "fieldsByKeys" Bool
+  :> Header "X-AUSERNAME" String
   :> Header "Authorization" String :> Get '[JSON] SearchResponse
   :<|>
   "rest" :> "api" :> "2" :> "field"
+  :> Header "X-AUSERNAME" String
   :> Header "Authorization" String :> Get '[JSON] FieldDetails
 
 
 api :: Proxy API
 api = Proxy
 
-search :: Maybe String -> Maybe Int -> Maybe String -> Maybe Bool -> Maybe String -> ClientM SearchResponse
+search :: Maybe String -> Maybe Int -> Maybe String -> Maybe Bool -> Maybe String -> Maybe String -> ClientM SearchResponse
 
-getFields :: Maybe String -> ClientM FieldDetails
+getFields :: Maybe String -> Maybe String -> ClientM FieldDetails
 
 search :<|> getFields = client api
 
-query :: String -> String -> ClientM SearchResponse
-query q t = search (Just q) (Just 1) (Just "*all") (Just True) (Just ("Bearer " ++ t))
+query :: String -> String -> String -> String -> ClientM SearchResponse
+query q u a t = search (Just q) (Just 1) (Just "*all") (Just True) (Just u) (Just $ a ++ " " ++ t)
 
+fieldsQuery :: String -> String -> String -> ClientM FieldDetails
+fieldsQuery u a t = getFields (Just u) (Just $ a ++ " " ++ t )
 
 run' :: Config -> IO ()
 run' cfg = do
-  manager' <- mkMngr (url cfg) (crtPath cfg) (keyPath cfg)
-  u <- parseBaseUrl (url cfg) 
-  res <- runClientM (query "type = Story" (token cfg)) (mkClientEnv manager' u)
+  manager' <- case (crtPath cfg) of
+    Just c -> case (keyPath cfg) of
+      Just k -> mkMngr (url cfg) c k
+      Nothing -> newTlsManager
+    Nothing -> newTlsManager
+  u <- parseBaseUrl (url cfg)
+  let q = query "project = 'Orochi'" (user cfg) (authorization cfg) (token cfg)
+  let f = fieldsQuery (user cfg) (authorization cfg) (token cfg)
+  res <- runClientM f (mkClientEnv manager' u)
   case res of
     Left err -> putStrLn $ "Error: " ++ show err
     Right r -> print r 
