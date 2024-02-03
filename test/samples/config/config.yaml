@@ -1,0 +1,6 @@
+url: https://sample.url.com
+user: ghidorah
+authorization: Bearer
+token: abcdefghijklmnopqrstuvwxyz1234567890
+crtPath: path_to_certificate.crt
+keyPath: path_to_key.key

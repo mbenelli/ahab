@@ -1,4 +1,24 @@
-crtPath: path_to_certificate.crt
-keyPath: path_to_key.key
+# Url of the Jira host. It must contain the schema (http or https)
+# Currently only https is supported
+
 url: https://sample.url.com
+
+# User name
+
+user: foobar
+
+# The prefix of the token for the "Authorization" http header
+# It can be "Bearer" for authorization or "Basic" for
+# authentication
+
+authorization: Bearer
+
+# Token to be passed in the "Authorization" http header
+
 token: abcdefghijklmnopqrstuvwxyz1234567890
+
+# OPTIONAL: Client certificate
+crtPath: path_to_certificate.crt
+
+# OPTIONAL: Client key
+keyPath: path_to_key.key

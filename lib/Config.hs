@@ -8,10 +8,12 @@ import Data.Yaml
 import System.Directory
 
 data Config = Config
-  { crtPath :: !String
-  , keyPath :: !String
-  , url :: !String
+  { url :: !String
+  , user :: !String
+  , authorization :: !String
   , token :: !String
+  , crtPath :: !(Maybe String)
+  , keyPath :: !(Maybe String)
   } deriving (Eq, Show, Generic)
 
 instance FromJSON Config
@@ -23,9 +25,3 @@ defaultConfigFile = getXdgDirectory XdgConfig "ghidorah/config.yaml"
 readConfig :: String -> IO (Either ParseException Config)
 readConfig = decodeFileEither 
 
---main :: IO ()
---main = do
---  c <- readConfig "config.yaml"
---  case c of
---    Left err -> putStrLn $ "Error: " ++ show err
---    Right conf -> print conf
