@@ -119,7 +119,7 @@ query q t = search (Just q) (Just 1) (Just "*all") (Just True) (Just ("Bearer " 
 
 run' :: Config -> IO ()
 run' cfg = do
-  manager' <- mkMngr "issue.swf.daimler.com" (crtPath cfg) (keyPath cfg)
+  manager' <- mkMngr (url cfg) (crtPath cfg) (keyPath cfg)
   u <- parseBaseUrl (url cfg) 
   res <- runClientM (query "type = Story" (token cfg)) (mkClientEnv manager' u)
   case res of
