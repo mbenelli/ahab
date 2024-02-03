@@ -15,7 +15,7 @@ import Network.HTTP.Client.TLS (mkManagerSettings)
 import Network.TLS (credentialLoadX509, onCertificateRequest, onServerCertificate,
                     clientHooks, clientSupported, supportedCiphers, defaultParamsClient) 
 import Network.TLS.Extra.Cipher (ciphersuite_strong)
-import Servant.API (JSON, Header, QueryParam, type (:>), Get)
+import Servant.API (JSON, Header, QueryParam, type (:>), type (:<|>)(..), Get)
 import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
 
 import Config
@@ -106,16 +106,23 @@ type API = "rest" :> "api" :> "2" :> "search"
   :> QueryParam "fields" String
   :> QueryParam "fieldsByKeys" Bool
   :> Header "Authorization" String :> Get '[JSON] SearchResponse
+  :<|>
+  "rest" :> "api" :> "2" :> "field"
+  :> Header "Authorization" String :> Get '[JSON] FieldDetails
 
 
 api :: Proxy API
 api = Proxy
 
 search :: Maybe String -> Maybe Int -> Maybe String -> Maybe Bool -> Maybe String -> ClientM SearchResponse
-search = client api
+
+getFields :: Maybe String -> ClientM FieldDetails
+
+search :<|> getFields = client api
 
 query :: String -> String -> ClientM SearchResponse
 query q t = search (Just q) (Just 1) (Just "*all") (Just True) (Just ("Bearer " ++ t))
+
 
 run' :: Config -> IO ()
 run' cfg = do
@@ -124,7 +131,7 @@ run' cfg = do
   res <- runClientM (query "type = Story" (token cfg)) (mkClientEnv manager' u)
   case res of
     Left err -> putStrLn $ "Error: " ++ show err
-    Right s -> print s
+    Right r -> print r 
 
 run :: IO ()
 run = do
@@ -133,4 +140,6 @@ run = do
   case cfg of
     Left e -> putStrLn $ "Error: " ++ show e
     Right c -> run' c
+
+  
 
