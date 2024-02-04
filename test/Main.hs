@@ -1,9 +1,9 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main (main) where
 
 import Config
 
---import Test.Tasty
---import Test.Tasty.HUnit
 import Test.HUnit
 
 sampleConfig :: Config

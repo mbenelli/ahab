@@ -9,13 +9,14 @@ module Field where
 import Data.Aeson
 import Data.Aeson.Types (Parser)
 import Data.HashMap.Strict as M
+import Data.Text
 import GHC.Generics
 
 
 data Field = Field
-  { fieldId :: !String
-  , fieldName :: !(Maybe String)
-  , fieldValue :: !(Maybe String)
+  { fieldId :: Text
+  , fieldName :: !(Maybe Text)
+  , fieldValue :: !(Maybe Text)
   }
   deriving Show
 
@@ -25,18 +26,18 @@ instance {-# OVERLAPPING #-} FromJSON [Field] where
       Object _ -> True
       _  -> False)
 
-parseField :: (String, Value) -> Parser Field
+parseField :: (Text, Value) -> Parser Field
 parseField (i, v) =
   withObject "field body" (\ o ->
     Field i <$> o .:? "name" <*> o .:? "value")
     v
 
 data FieldDetails = FieldDetails
-  { clausesNames :: !(Maybe [String])
+  { clausesNames :: !(Maybe [Text])
   , custom :: !(Maybe Bool)
-  , id :: !(Maybe String)
-  , key :: !(Maybe String)
-  , name :: !(Maybe String)
+  , id :: !(Maybe Text)
+  , key :: !(Maybe Text)
+  , name :: !(Maybe Text)
   , navigable :: !(Maybe Bool)
   , orderable :: !(Maybe Bool)
   , searchable :: !(Maybe Bool)

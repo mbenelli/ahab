@@ -3,17 +3,18 @@
 
 module Config where
 
-import GHC.Generics
+import Data.Text
 import Data.Yaml
+import GHC.Generics
 import System.Directory
 
 data Config = Config
-  { url :: !String
-  , user :: !String
-  , authorization :: !String
-  , token :: !String
-  , crtPath :: !(Maybe String)
-  , keyPath :: !(Maybe String)
+  { url :: !Text
+  , user :: !Text
+  , authorization :: !Text
+  , token :: !Text
+  , crtPath :: !(Maybe Text)
+  , keyPath :: !(Maybe Text)
   } deriving (Eq, Show, Generic)
 
 instance FromJSON Config
