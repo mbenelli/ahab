@@ -16,6 +16,7 @@ import Network.TLS (credentialLoadX509, onCertificateRequest,
 import Network.TLS.Extra.Cipher (ciphersuite_strong)
 import Servant.API (JSON, Header, QueryParam, type (:>), type (:<|>)(..), Get)
 import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
+import Text.Pretty.Simple
 
 import Config
 import Search
@@ -105,7 +106,7 @@ withContinuation f k = do
   res <- run f
   case res of
     Left l -> putStrLn $ unpack l
-    Right r -> print $ k r
+    Right r -> pPrintNoColor $ k r
 
 withSearchResult :: Show a => Text -> (SearchResponse -> a) -> IO ()
 withSearchResult q = withContinuation (query q)

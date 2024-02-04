@@ -28,6 +28,7 @@ library
       , directory
       , http-client
       , http-client-tls
+      , pretty-simple
       , servant
       , servant-client
       , text
