@@ -5,6 +5,7 @@
 
 module Client where
 
+import Control.Monad.Reader
 import Data.Aeson (FromJSON)
 import Data.Default (Default(def))
 import Data.Proxy (Proxy(..))
@@ -108,7 +109,6 @@ type API = "rest" :> "api" :> "2" :> "search"
   :> Header "X-AUSERNAME" String
   :> Header "Authorization" String :> Get '[JSON] [FieldDetails]
 
-
 api :: Proxy API
 api = Proxy
 
@@ -118,34 +118,51 @@ getFields :: Maybe String -> Maybe String -> ClientM [FieldDetails]
 
 search :<|> getFields = client api
 
-query :: String -> String -> String -> String -> ClientM SearchResponse
-query q u a t = search (Just q) (Just 1) (Just "*all") (Just True) (Just u) (Just $ a ++ " " ++ t)
+query :: String -> Config -> ClientM SearchResponse
+query q cfg = search (Just q) Nothing (Just "*all") (Just True)
+  (Just $ user cfg) (Just $ authorization cfg ++ " " ++ token cfg)
 
-fieldsQuery :: String -> String -> String -> ClientM [FieldDetails]
-fieldsQuery u a t = getFields (Just u) (Just $ a ++ " " ++ t )
 
-run' :: Config -> IO ()
-run' cfg = do
-  manager' <- case crtPath cfg of
-    Just c -> case keyPath cfg of
-      Just k -> mkMngr (url cfg) c k
-      Nothing -> newTlsManager
-    Nothing -> newTlsManager
-  u <- parseBaseUrl (url cfg)
-  let q = query "project = 'Orochi'" (user cfg) (authorization cfg) (token cfg)
-  let f = fieldsQuery (user cfg) (authorization cfg) (token cfg)
-  res <- runClientM f (mkClientEnv manager' u)
-  case res of
-    Left err -> putStrLn $ "Error: " ++ show err
-    Right r -> print r 
+fieldsQuery :: Config -> ClientM [FieldDetails]
+fieldsQuery cfg = getFields
+  (Just $ user cfg) (Just $ authorization cfg ++ " " ++ token cfg)
 
-run :: IO ()
-run = do
-  f <- defaultConfigFile
-  cfg <- readConfig f -- readConfig "config.yaml"
-  case cfg of
-    Left e -> putStrLn $ "Error: " ++ show e
-    Right c -> run' c
+
+run :: Reader Config (ClientM a)  -> IO (Either String a)
+run f = do
+  file <- defaultConfigFile
+  c <- readConfig file
+  case c of
+    Left e -> return $ Left $ "Error: " ++ show e
+    Right cfg -> do
+      manager' <- case crtPath cfg of
+        Just cert -> case keyPath cfg of
+              Just ckey -> mkMngr (url cfg) cert ckey
+              Nothing -> newTlsManager
+        Nothing -> newTlsManager
+      u <- parseBaseUrl (url cfg)
+      let g = runReader f cfg
+      res <- runClientM g (mkClientEnv manager' u)
+      case res of
+        Left err -> return $ Left $ "Error: " ++ show err
+        Right r -> return $ Right r
+
+
+-- Printers
+
+withSearchResult :: Show a => String -> (SearchResponse -> a) -> IO ()
+withSearchResult q f = do
+  r <- run $ asks $ query q
+  case r of
+    Left l -> putStrLn l
+    Right x -> print $ f x
+
+withFields :: Show a => ([FieldDetails] -> a) -> IO ()
+withFields f = do
+  r <- run $ asks fieldsQuery
+  case r of
+    Left l -> putStrLn l
+    Right x -> print $ f x
 
   
 

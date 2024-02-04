@@ -28,6 +28,7 @@ library
       , directory
       , http-client
       , http-client-tls
+      , mtl
       , tls
       , servant
       , servant-client
