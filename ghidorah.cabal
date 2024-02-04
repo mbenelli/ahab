@@ -17,7 +17,7 @@ common warnings
 
 library
     import:           warnings
-    exposed-modules:  Client, Config, Field
+    exposed-modules:  Client, Config, Search, Field
     -- other-modules:
     -- other-extensions:
     build-depends:

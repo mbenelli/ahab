@@ -1,15 +1,12 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Client where
 
-import Control.Monad.Reader
-import Data.Aeson (FromJSON)
+import Control.Monad.Reader (asks, runReader, Reader)
 import Data.Default (Default(def))
 import Data.Proxy (Proxy(..))
-import GHC.Generics (Generic)
 import Network.Connection (TLSSettings(TLSSettings))
 import Network.HTTP.Client (newManager, Manager)
 import Network.HTTP.Client.TLS (mkManagerSettings, newTlsManager)
@@ -20,6 +17,7 @@ import Servant.API (JSON, Header, QueryParam, type (:>), type (:<|>)(..), Get)
 import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
 
 import Config
+import Search
 import Field
 
 
@@ -40,62 +38,7 @@ mkMngr hostName crtFile keyFile = do
   newManager $ mkManagerSettings tlsSettings Nothing
 
 
-
 -- API
-
-data IncludedFields = IncludedFields
-  { actuallyIncluded :: ![String]
-  , excluded :: ![String]
-  , includede :: ![String]
-  } deriving (Show, Generic)
-
-instance FromJSON IncludedFields
-
-
---data Field = Field
---  { self :: !String
---  , value :: !String
---  --, id :: !String
---  , disabled :: !Bool
---  } deriving (Show, Generic)
-
-
-
-data IssueBean = IssueBean
-  {
-  -- changelog :: !String -- PageOfChangelogs
-  --, editmeta :: !String -- IssueUpdateMetadata
-  --, expand_ :: !String
-  fields :: !(Maybe [Field])
-  , fieldsToInclude :: !(Maybe IncludedFields)
-  --,
-  , id :: !String
-  , key :: !String
-  --, names_ :: !String -- JSON
-  --, operation :: !String -- Operations
-  --, properties :: !String -- JSON
-  --, renderedFields :: !String -- JSON
-  --, schema_ :: !String -- JSON
-  --, self :: !String
-  --, transitions :: !String -- [IssueTransition]
-  --, versionedRepresentation :: !String -- JSON
-  } deriving (Show, Generic)
-
-instance FromJSON IssueBean
-
-data SearchResponse = SearchResponse
-  { expand :: !String
-  , issues :: ![IssueBean]
-  , maxResults :: !Int
---  , names :: !String  -- JSON
---  , schema :: !String -- JSON
-  , startAt :: !Integer
-  , total :: !Integer
-  , warningMessage :: !(Maybe [String])
-  } deriving (Show, Generic)
-
-instance FromJSON SearchResponse
-
 
 type API = "rest" :> "api" :> "2" :> "search"
   :> QueryParam "jql" String
