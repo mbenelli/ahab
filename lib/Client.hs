@@ -4,7 +4,6 @@
 
 module Client where
 
-import Control.Monad.Reader (asks, runReader, Reader)
 import Data.Default (Default(def))
 import Data.Proxy (Proxy(..))
 import Network.Connection (TLSSettings(TLSSettings))
@@ -71,7 +70,7 @@ fieldsQuery cfg = getFields
   (Just $ user cfg) (Just $ authorization cfg ++ " " ++ token cfg)
 
 
-run :: Reader Config (ClientM a)  -> IO (Either String a)
+run :: (Config -> ClientM a)  -> IO (Either String a)
 run f = do
   file <- defaultConfigFile
   c <- readConfig file
@@ -84,7 +83,7 @@ run f = do
               Nothing -> newTlsManager
         Nothing -> newTlsManager
       u <- parseBaseUrl (url cfg)
-      let g = runReader f cfg
+      let g = f cfg -- runReader  (asks f)  cfg
       res <- runClientM g (mkClientEnv manager' u)
       case res of
         Left err -> return $ Left $ "Error: " ++ show err
@@ -93,19 +92,16 @@ run f = do
 
 -- Printers
 
-withSearchResult :: Show a => String -> (SearchResponse -> a) -> IO ()
-withSearchResult q f = do
-  r <- run $ asks $ query q
-  case r of
+withContinuation :: Show b => (Config -> ClientM a) -> (a -> b) -> IO ()
+withContinuation f k = do
+  res <- run f
+  case res of
     Left l -> putStrLn l
-    Right x -> print $ f x
+    Right r -> print $ k r
+
+withSearchResult :: Show a => String -> (SearchResponse -> a) -> IO ()
+withSearchResult q = withContinuation (query q)
 
 withFields :: Show a => ([FieldDetails] -> a) -> IO ()
-withFields f = do
-  r <- run $ asks fieldsQuery
-  case r of
-    Left l -> putStrLn l
-    Right x -> print $ f x
-
-  
+withFields = withContinuation fieldsQuery
 
