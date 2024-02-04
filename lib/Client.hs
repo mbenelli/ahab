@@ -106,7 +106,7 @@ type API = "rest" :> "api" :> "2" :> "search"
   :<|>
   "rest" :> "api" :> "2" :> "field"
   :> Header "X-AUSERNAME" String
-  :> Header "Authorization" String :> Get '[JSON] FieldDetails
+  :> Header "Authorization" String :> Get '[JSON] [FieldDetails]
 
 
 api :: Proxy API
@@ -114,20 +114,20 @@ api = Proxy
 
 search :: Maybe String -> Maybe Int -> Maybe String -> Maybe Bool -> Maybe String -> Maybe String -> ClientM SearchResponse
 
-getFields :: Maybe String -> Maybe String -> ClientM FieldDetails
+getFields :: Maybe String -> Maybe String -> ClientM [FieldDetails]
 
 search :<|> getFields = client api
 
 query :: String -> String -> String -> String -> ClientM SearchResponse
 query q u a t = search (Just q) (Just 1) (Just "*all") (Just True) (Just u) (Just $ a ++ " " ++ t)
 
-fieldsQuery :: String -> String -> String -> ClientM FieldDetails
+fieldsQuery :: String -> String -> String -> ClientM [FieldDetails]
 fieldsQuery u a t = getFields (Just u) (Just $ a ++ " " ++ t )
 
 run' :: Config -> IO ()
 run' cfg = do
-  manager' <- case (crtPath cfg) of
-    Just c -> case (keyPath cfg) of
+  manager' <- case crtPath cfg of
+    Just c -> case keyPath cfg of
       Just k -> mkMngr (url cfg) c k
       Nothing -> newTlsManager
     Nothing -> newTlsManager
