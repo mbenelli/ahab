@@ -17,7 +17,11 @@ common warnings
 
 library
     import:           warnings
-    exposed-modules:  Client, Config, Search, Field
+    exposed-modules:
+        Ghidorah.Client
+      , Ghidorah.Config
+      , Ghidorah.Search
+      , Ghidorah.Field
     -- other-modules:
     -- other-extensions:
     build-depends:
@@ -28,6 +32,7 @@ library
       , directory
       , http-client
       , http-client-tls
+      , mtl
       , pretty-simple
       , servant
       , servant-client

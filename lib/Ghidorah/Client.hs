@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Client where
+module Ghidorah.Client where
 
 import Data.Default (Default(def))
 import Data.Proxy (Proxy(..))
@@ -18,9 +18,9 @@ import Servant.API (JSON, Header, QueryParam, type (:>), type (:<|>)(..), Get)
 import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
 import Text.Pretty.Simple
 
-import Config
-import Search
-import Field
+import Ghidorah.Config
+import Ghidorah.Search
+import Ghidorah.Field
 
 
 -- Certificate handling

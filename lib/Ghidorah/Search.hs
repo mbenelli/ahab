@@ -1,12 +1,12 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Search where
+module Ghidorah.Search where
 
 import Data.Aeson (FromJSON)
 import Data.Text
 import GHC.Generics (Generic)
 
-import Field (Field)
+import Ghidorah.Field (Field)
 
 data IncludedFields = IncludedFields
   { actuallyIncluded :: ![Text]

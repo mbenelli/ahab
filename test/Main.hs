@@ -2,7 +2,7 @@
 
 module Main (main) where
 
-import Config
+import Ghidorah.Config
 
 import Test.HUnit
 

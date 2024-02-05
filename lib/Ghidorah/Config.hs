@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Config where
+module Ghidorah.Config where
 
 import Data.Text
 import Data.Yaml

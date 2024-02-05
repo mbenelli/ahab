@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 
-module Field where
+module Ghidorah.Field where
 
 import Data.Aeson
 import Data.Aeson.Types (Parser)
@@ -14,7 +14,7 @@ import GHC.Generics
 
 
 data Field = Field
-  { fieldId :: Text
+  { fieldId :: !Text
   , fieldName :: !(Maybe Text)
   , fieldValue :: !(Maybe Text)
   }
