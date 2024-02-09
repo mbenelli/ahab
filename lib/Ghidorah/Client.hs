@@ -14,13 +14,12 @@ import Network.TLS (credentialLoadX509, onCertificateRequest,
                     onServerCertificate, clientHooks, clientSupported,
                     supportedCiphers, defaultParamsClient) 
 import Network.TLS.Extra.Cipher (ciphersuite_strong)
-import Servant.API (JSON, Header, QueryParam, type (:>), type (:<|>)(..), Get)
+import Servant.API (JSON, Header, QueryParam, Capture, type (:>), type (:<|>)(..), Get)
 import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
 import Text.Pretty.Simple
 
 import Ghidorah.Config
-import Ghidorah.Search
-import Ghidorah.Field
+import Ghidorah.Types
 
 
 -- Certificate handling
@@ -51,11 +50,20 @@ type API = "rest" :> "api" :> "2" :> "search"
   :> QueryParam "fields" Text
   :> QueryParam "fieldsByKeys" Bool
   :> Header "X-AUSERNAME" Text 
-  :> Header "Authorization" Text :> Get '[JSON] SearchResponse
+  :> Header "Authorization" Text
+  :> Get '[JSON] SearchResponse
   :<|>
   "rest" :> "api" :> "2" :> "field"
   :> Header "X-AUSERNAME" Text
-  :> Header "Authorization" Text :> Get '[JSON] [FieldDetails]
+  :> Header "Authorization" Text
+  :> Get '[JSON] [FieldDetails]
+  :<|>
+  "rest" :> "api" :> "2" :> "issue"
+  :> Capture "issueid" Text
+  :> "changelog"
+  :> Header "X-AUSERNAME" Text
+  :> Header "Authorization" Text
+  :> Get '[JSON] PageBeanChangelog
 
 api :: Proxy API
 api = Proxy
@@ -64,19 +72,26 @@ search :: Maybe Text -> Maybe Int -> Maybe Text -> Maybe Bool -> Maybe Text -> M
 
 getFields :: Maybe Text -> Maybe Text -> ClientM [FieldDetails]
 
-search :<|> getFields = client api
+changelogs :: Text -> Maybe Text -> Maybe Text -> ClientM PageBeanChangelog
+
+search :<|> getFields :<|> changelogs = client api
 
 auth :: Config -> Text
 auth c = T.unwords [authorization c, token c]
 
 query :: Text -> Config -> ClientM SearchResponse
-query q cfg = search (Just q) Nothing (Just "*all") (Just True)
+query q cfg = search (Just q) (Just 1) (Just "*all") (Just True)
   (Just $ user cfg) (Just $ auth cfg)
 
 
 fieldsQuery :: Config -> ClientM [FieldDetails]
 fieldsQuery cfg = getFields
   (Just $ user cfg) (Just $ auth cfg)
+
+changelogQuery :: Text -> Config -> ClientM PageBeanChangelog
+changelogQuery x cfg = changelogs x
+  (Just $ user cfg) (Just $ auth cfg)
+
 
 
 run :: (Config -> ClientM a)  -> IO (Either Text a)
@@ -109,8 +124,11 @@ withContinuation f k = do
     Right r -> pPrintNoColor $ k r
 
 withSearchResult :: Show a => Text -> (SearchResponse -> a) -> IO ()
-withSearchResult q = withContinuation (query q)
+withSearchResult q = withContinuation $ query q
 
 withFields :: Show a => ([FieldDetails] -> a) -> IO ()
 withFields = withContinuation fieldsQuery
+
+withChangelog :: Show a => Text -> (PageBeanChangelog -> a) -> IO ()
+withChangelog x = withContinuation $ changelogQuery x
 

@@ -20,14 +20,14 @@ library
     exposed-modules:
         Ghidorah.Client
       , Ghidorah.Config
-      , Ghidorah.Field
-      , Ghidorah.Search
       , Ghidorah.Server
+      , Ghidorah.Types
     -- other-modules:
     -- other-extensions:
     build-depends:
         base ^>=4.17.2.1
       , aeson
+      , basic-prelude
       , connection
       , data-default
       , directory

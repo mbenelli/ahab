@@ -33,16 +33,17 @@ parseField (i, v) =
     v
 
 data FieldDetails = FieldDetails
-  { clausesNames :: !(Maybe [Text])
-  , custom :: !(Maybe Bool)
-  , id :: !(Maybe Text)
-  , key :: !(Maybe Text)
-  , name :: !(Maybe Text)
-  , navigable :: !(Maybe Bool)
-  , orderable :: !(Maybe Bool)
-  , searchable :: !(Maybe Bool)
+  { field_clausesNames :: !(Maybe [Text])
+  , field_custom :: !(Maybe Bool)
+  , field_id :: !(Maybe Text)
+  , field_key :: !(Maybe Text)
+  , field_name :: !(Maybe Text)
+  , field_navigable :: !(Maybe Bool)
+  , field_orderable :: !(Maybe Bool)
+  , field_searchable :: !(Maybe Bool)
   }
   deriving (Show, Generic)
 
-instance FromJSON FieldDetails
+instance FromJSON FieldDetails where
+  parseJSON = genericParseJSON defaultOptions{ fieldLabelModifier = drop 6 }
 
