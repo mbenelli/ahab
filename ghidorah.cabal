@@ -26,23 +26,23 @@ library
     -- other-extensions:
     build-depends:
         base ^>=4.17.2.1
-      , aeson
-      , basic-prelude
-      , connection
-      , data-default
-      , directory
-      , http-client
-      , http-client-tls
-      , mtl
-      , pretty-simple
-      , servant
-      , servant-client
-      , servant-server
-      , text
-      , tls
-      , unordered-containers
-      , warp
-      , yaml
+      , aeson >= 2.2.1 && < 2.3
+      , basic-prelude >= 0.7.0 && < 0.8
+      , connection >= 0.3.1 && < 0.4
+      , data-default >= 0.7.1 && < 0.8
+      , directory >= 1.3.7 && < 1.4
+      , http-client >= 0.7.16 && < 0.8
+      , http-client-tls >= 0.3.6 && < 0.4
+      , mtl >= 2.2.2 && < 2.3
+      , pretty-simple >= 4.1.2 && < 4.2
+      , servant >= 0.20.1 && < 0.21
+      , servant-client >= 0.20 && < 0.21
+      , servant-server >= 0.20 && < 0.21
+      , text >= 2.0.2 && < 2.1
+      , tls >= 1.6.0 && < 1.7
+      , unordered-containers >= 0.2.20 && < 0.3
+      , warp >= 3.3.31 && < 3.4
+      , yaml >= 0.11.11 && < 0.12
     hs-source-dirs:   lib
     default-language: Haskell2010
 
