@@ -58,13 +58,13 @@ instance FromJSON IncludedFields
 
 
 data ChangeDetails = ChangeDetails
-  { field :: !Text
-  , fieldId :: !Text
-  , fieldtype :: !Text
-  , from :: !Text
-  , fromString :: !Text
-  , to :: !Text
-  , toString :: !Text
+  { field :: !(Maybe Text)
+  , fieldId :: !(Maybe Text)
+  , fieldtype :: !(Maybe Text)
+  , from :: !(Maybe Text)
+  , fromString :: !(Maybe Text)
+  , to :: !(Maybe Text)
+  , toString :: !(Maybe Text)
   } deriving (Show, Generic)
 
 instance FromJSON ChangeDetails
