@@ -47,6 +47,7 @@ mkMngr hostName crtFile keyFile = do
 type API = "rest" :> "api" :> "2" :> "search"
   :> QueryParam "jql" Text
   :> QueryParam "maxResults" Int
+  :> QueryParam "expand" Text
   :> QueryParam "fields" Text
   :> QueryParam "fieldsByKeys" Bool
   :> Header "X-AUSERNAME" Text 
@@ -58,9 +59,12 @@ type API = "rest" :> "api" :> "2" :> "search"
   :> Header "Authorization" Text
   :> Get '[JSON] [FieldDetails]
   :<|>
-  "rest" :> "api" :> "2" :> "issue"
-  :> Capture "issueid" Text
-  :> "changelog"
+  "rest" :> "api" :> "2" :> "issue" :> Capture "issueid" Text
+  :> Header "X-AUSERNAME" Text
+  :> Header "Authorization" Text
+  :> Get '[JSON] IssueBean
+  :<|>
+  "rest" :> "api" :> "2" :> "issue" :> Capture "issueid" Text :> "changelog"
   :> Header "X-AUSERNAME" Text
   :> Header "Authorization" Text
   :> Get '[JSON] PageBeanChangelog
@@ -68,24 +72,30 @@ type API = "rest" :> "api" :> "2" :> "search"
 api :: Proxy API
 api = Proxy
 
-search :: Maybe Text -> Maybe Int -> Maybe Text -> Maybe Bool -> Maybe Text -> Maybe Text -> ClientM SearchResponse
+search :: Maybe Text -> Maybe Int -> Maybe Text -> Maybe Text -> Maybe Bool -> Maybe Text -> Maybe Text -> ClientM SearchResponse
 
 getFields :: Maybe Text -> Maybe Text -> ClientM [FieldDetails]
 
+issue :: Text -> Maybe Text -> Maybe Text -> ClientM IssueBean
+
 changelogs :: Text -> Maybe Text -> Maybe Text -> ClientM PageBeanChangelog
 
-search :<|> getFields :<|> changelogs = client api
+search :<|> getFields :<|> issue :<|> changelogs = client api
 
 auth :: Config -> Text
 auth c = T.unwords [authorization c, token c]
 
-query :: Text -> Config -> ClientM SearchResponse
-query q cfg = search (Just q) (Just 1) (Just "*all") (Just True)
+query :: Text -> Text -> Config -> ClientM SearchResponse
+query q f cfg = search (Just q) (Just 100) (Just "changelog") (Just f) (Just True)
   (Just $ user cfg) (Just $ auth cfg)
 
 
 fieldsQuery :: Config -> ClientM [FieldDetails]
 fieldsQuery cfg = getFields
+  (Just $ user cfg) (Just $ auth cfg)
+
+issueQuery :: Text -> Config -> ClientM IssueBean
+issueQuery x cfg = issue x
   (Just $ user cfg) (Just $ auth cfg)
 
 changelogQuery :: Text -> Config -> ClientM PageBeanChangelog
@@ -123,11 +133,14 @@ withContinuation f k = do
     Left l -> putStrLn $ unpack l
     Right r -> pPrintNoColor $ k r
 
-withSearchResult :: Show a => Text -> (SearchResponse -> a) -> IO ()
-withSearchResult q = withContinuation $ query q
+withSearchResult :: Show a => Text -> Text -> (SearchResponse -> a) -> IO ()
+withSearchResult q f = withContinuation $ query q f
 
 withFields :: Show a => ([FieldDetails] -> a) -> IO ()
 withFields = withContinuation fieldsQuery
+
+withIssue :: Show a => Text -> (IssueBean -> a) -> IO ()
+withIssue x = withContinuation $ issueQuery x
 
 withChangelog :: Show a => Text -> (PageBeanChangelog -> a) -> IO ()
 withChangelog x = withContinuation $ changelogQuery x
