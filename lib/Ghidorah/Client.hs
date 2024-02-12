@@ -14,7 +14,8 @@ import Network.TLS (credentialLoadX509, onCertificateRequest,
                     onServerCertificate, clientHooks, clientSupported,
                     supportedCiphers, defaultParamsClient) 
 import Network.TLS.Extra.Cipher (ciphersuite_strong)
-import Servant.API (JSON, Header, QueryParam, Capture, type (:>), type (:<|>)(..), Get)
+import Servant.API (JSON, Header, QueryParam, Capture,
+                    type (:>), type (:<|>)(..), Get)
 import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
 import Text.Pretty.Simple
 
@@ -72,7 +73,9 @@ type API = "rest" :> "api" :> "2" :> "search"
 api :: Proxy API
 api = Proxy
 
-search :: Maybe Text -> Maybe Int -> Maybe Text -> Maybe Text -> Maybe Bool -> Maybe Text -> Maybe Text -> ClientM SearchResponse
+search :: Maybe Text -> Maybe Int -> Maybe Text -> Maybe Text -> Maybe Bool
+       -> Maybe Text -> Maybe Text
+       -> ClientM SearchResponse
 
 getFields :: Maybe Text -> Maybe Text -> ClientM [FieldDetails]
 
@@ -86,9 +89,9 @@ auth :: Config -> Text
 auth c = T.unwords [authorization c, token c]
 
 query :: Text -> Text -> Config -> ClientM SearchResponse
-query q f cfg = search (Just q) (Just 100) (Just "changelog") (Just f) (Just True)
-  (Just $ user cfg) (Just $ auth cfg)
-
+query q f cfg = search (Just q) (Just 100) (Just "changelog")
+                       (Just f) (Just True)
+                       (Just $ user cfg) (Just $ auth cfg)
 
 fieldsQuery :: Config -> ClientM [FieldDetails]
 fieldsQuery cfg = getFields
@@ -117,7 +120,7 @@ run f = do
               Nothing -> newTlsManager
         Nothing -> newTlsManager
       u <- parseBaseUrl  $ unpack (url cfg)
-      let g = f cfg -- runReader  (asks f)  cfg
+      let g = f cfg
       res <- runClientM g (mkClientEnv manager' u)
       case res of
         Left err -> return $ Left $ append "Error: " $ pack $ show err
