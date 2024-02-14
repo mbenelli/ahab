@@ -47,6 +47,7 @@ mkMngr hostName crtFile keyFile = do
 
 type API = "rest" :> "api" :> "2" :> "search"
   :> QueryParam "jql" Text
+  :> QueryParam "startAt" Int
   :> QueryParam "maxResults" Int
   :> QueryParam "expand" Text
   :> QueryParam "fields" Text
@@ -73,7 +74,7 @@ type API = "rest" :> "api" :> "2" :> "search"
 api :: Proxy API
 api = Proxy
 
-search :: Maybe Text -> Maybe Int -> Maybe Text -> Maybe Text -> Maybe Bool
+search :: Maybe Text -> Maybe Int -> Maybe Int -> Maybe Text -> Maybe Text -> Maybe Bool
        -> Maybe Text -> Maybe Text
        -> ClientM SearchResponse
 
@@ -89,9 +90,19 @@ auth :: Config -> Text
 auth c = T.unwords [authorization c, token c]
 
 query :: Text -> Text -> Config -> ClientM SearchResponse
-query q f cfg = search (Just q) (Just 100) (Just "changelog")
+query q f cfg = search (Just q) (Just 0) (Just 100) (Just "changelog")
                        (Just f) (Just True)
                        (Just $ user cfg) (Just $ auth cfg)
+
+searchQuery :: Text -> Int -> Text -> Config -> ClientM SearchResponse
+searchQuery jql start fields cfg = search (Just jql)
+                                          (Just start)
+                                          (Just 100)
+                                          (Just "changelog")
+                                          (Just fields)
+                                          (Just True)
+                                          (Just $ user cfg)
+                                          (Just $ auth cfg)
 
 fieldsQuery :: Config -> ClientM [FieldDetails]
 fieldsQuery cfg = getFields
@@ -136,8 +147,8 @@ withContinuation f k = do
     Left l -> putStrLn $ unpack l
     Right r -> pPrintNoColor $ k r
 
-withSearchResult :: Show a => Text -> Text -> (SearchResponse -> a) -> IO ()
-withSearchResult q f = withContinuation $ query q f
+withSearchResult :: Show a => Text -> Int -> Text -> (SearchResponse -> a) -> IO ()
+withSearchResult q i f = withContinuation $ searchQuery q i f
 
 withFields :: Show a => ([FieldDetails] -> a) -> IO ()
 withFields = withContinuation fieldsQuery
@@ -147,4 +158,14 @@ withIssue x = withContinuation $ issueQuery x
 
 withChangelog :: Show a => Text -> (PageBeanChangelog -> a) -> IO ()
 withChangelog x = withContinuation $ changelogQuery x
+
+collectSearchResult :: Text -> Int -> Text -> [IssueBean] -> IO (Either Text [IssueBean])
+collectSearchResult q i f xs = do
+  res <- run $ searchQuery q i f
+  case res of
+    Left e -> return $ Left e 
+    Right r ->
+      if Prelude.null (issues r) 
+        then return $ Right xs
+        else collectSearchResult q (Prelude.length (xs ++ (issues r))) f (xs ++ (issues r))
 
