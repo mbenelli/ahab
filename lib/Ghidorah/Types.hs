@@ -18,7 +18,7 @@ data Field = Field
   , fieldName :: !(Maybe Text)
   , fieldValue :: !(Maybe Text)
   }
-  deriving Show
+  deriving (Show, Generic)
 
 instance {-# OVERLAPPING #-} FromJSON [Field] where
   parseJSON x =
@@ -31,6 +31,11 @@ parseField (i, v) =
   withObject "field body" (\ o ->
     Field i <$> o .:? "name" <*> o .:? "value")
     v
+
+instance ToJSON Field where
+  toEncoding = genericToEncoding defaultOptions {
+    fieldLabelModifier = dropWhileEnd $ (==) '\''
+  }
 
 data FieldDetails = FieldDetails
   { field_clausesNames :: !(Maybe [Text])
@@ -154,7 +159,10 @@ data PageOfChangelogs = PageOfChangelogs
 instance FromJSON PageOfChangelogs where
   parseJSON = genericParseJSON defaultOptions{ fieldLabelModifier = drop 4 }
 
-
+data IssueEvent = IssueEvent
+  { id :: !Int
+  , name :: !Text
+  }
 data IssueBean = IssueBean
   { issue_changelog :: !(Maybe PageOfChangelogs)
   , issue_editmeta :: !(Maybe Text) -- IssueUpdateMetadata
@@ -189,4 +197,51 @@ data SearchResponse = SearchResponse
   } deriving (Show, Generic)
 
 instance FromJSON SearchResponse
+
+data IssueTypeDetails = IssueTypeDetails
+  { itd_avatarId :: !(Maybe Int)
+  , itd_description :: !(Maybe Text)
+  , itd_entityId :: !(Maybe Text)
+  , itd_hierarchyLevel :: !(Maybe Int)
+  , itd_iconUrl :: !(Maybe Text)
+  , itd_id :: !(Maybe Text)
+  , itd_name :: !(Maybe Text)
+--  , itd_scope :: !(Maybe Scope)
+  , itd_self :: !(Maybe Text)
+  , itd_subtask :: !(Maybe Bool)
+  } deriving (Show, Generic)
+
+instance FromJSON IssueTypeDetails where
+  parseJSON = genericParseJSON defaultOptions{ fieldLabelModifier = drop 4 }
+
+data IssueType = IssueType
+  { issueType_id :: !Text
+  } deriving (Show, Generic)
+
+instance ToJSON IssueType where
+  toEncoding = genericToEncoding defaultOptions { fieldLabelModifier = drop 10 }
+
+data Project = Project
+  { project_key :: !Text
+  } deriving (Show, Generic)
+
+instance ToJSON Project where
+  toEncoding = genericToEncoding defaultOptions { fieldLabelModifier = drop 8 }
+
+data IssueObject = IssueObject
+  { i_summary :: !Text
+  , i_description :: !(Maybe Text)
+  , i_issuetype :: !IssueType
+  , i_project :: !Project
+  } deriving (Show, Generic) 
+
+instance ToJSON IssueObject where
+ toEncoding = genericToEncoding defaultOptions { fieldLabelModifier = drop 2 }
+
+data CreateIssueRequest = CreateIssueRequest
+   { createIssue_fields :: IssueObject
+   } deriving (Show, Generic)
+ 
+instance ToJSON CreateIssueRequest where
+ toEncoding = genericToEncoding defaultOptions { fieldLabelModifier = drop 12 }
 

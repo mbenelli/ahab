@@ -14,8 +14,8 @@ import Network.TLS (credentialLoadX509, onCertificateRequest,
                     onServerCertificate, clientHooks, clientSupported,
                     supportedCiphers, defaultParamsClient) 
 import Network.TLS.Extra.Cipher (ciphersuite_strong)
-import Servant.API (JSON, Header, QueryParam, Capture,
-                    type (:>), type (:<|>)(..), Get)
+import Servant.API (JSON, Header, QueryParam, Capture, ReqBody,
+                    type (:>), type (:<|>)(..), Get, Post)
 import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
 import Text.Pretty.Simple
 
@@ -61,6 +61,17 @@ type API = "rest" :> "api" :> "2" :> "search"
   :> Header "Authorization" Text
   :> Get '[JSON] [FieldDetails]
   :<|>
+  "rest" :> "api" :> "2" :> "issuetype"
+  :> Header "X-AUSERNAME" Text
+  :> Header "Authorization" Text
+  :> Get '[JSON] [IssueTypeDetails]
+  :<|>
+  "rest" :> "api" :> "2" :> "issue"
+  :> ReqBody '[JSON] CreateIssueRequest
+  :> Header "X-AUSERNAME" Text
+  :> Header "Authorization" Text
+  :> Post '[JSON] IssueBean
+  :<|>
   "rest" :> "api" :> "2" :> "issue" :> Capture "issueid" Text
   :> Header "X-AUSERNAME" Text
   :> Header "Authorization" Text
@@ -80,11 +91,15 @@ search :: Maybe Text -> Maybe Int -> Maybe Int -> Maybe Text -> Maybe Text -> Ma
 
 getFields :: Maybe Text -> Maybe Text -> ClientM [FieldDetails]
 
+issueTypes :: Maybe Text -> Maybe Text -> ClientM [IssueTypeDetails]
+
+createIssueReq :: CreateIssueRequest-> Maybe Text -> Maybe Text -> ClientM IssueBean
+
 issue :: Text -> Maybe Text -> Maybe Text -> ClientM IssueBean
 
 changelogs :: Text -> Maybe Text -> Maybe Text -> ClientM PageBeanChangelog
 
-search :<|> getFields :<|> issue :<|> changelogs = client api
+search :<|> getFields :<|> issueTypes :<|> createIssueReq :<|> issue :<|> changelogs = client api
 
 auth :: Config -> Text
 auth c = T.unwords [authorization c, token c]
@@ -106,6 +121,14 @@ searchQuery jql start fields cfg = search (Just jql)
 
 fieldsQuery :: Config -> ClientM [FieldDetails]
 fieldsQuery cfg = getFields
+  (Just $ user cfg) (Just $ auth cfg)
+
+issueTypeQuery :: Config -> ClientM [IssueTypeDetails]
+issueTypeQuery cfg = issueTypes
+  (Just $ user cfg) (Just $ auth cfg)
+
+createIssue' :: CreateIssueRequest -> Config -> ClientM IssueBean
+createIssue' x cfg = createIssueReq x
   (Just $ user cfg) (Just $ auth cfg)
 
 issueQuery :: Text -> Config -> ClientM IssueBean
@@ -147,11 +170,15 @@ withContinuation f k = do
     Left l -> putStrLn $ unpack l
     Right r -> pPrintNoColor $ k r
 
-withSearchResult :: Show a => Text -> Int -> Text -> (SearchResponse -> a) -> IO ()
+withSearchResult :: Show a => Text -> Int -> Text -> (SearchResponse -> a)
+                 -> IO ()
 withSearchResult q i f = withContinuation $ searchQuery q i f
 
 withFields :: Show a => ([FieldDetails] -> a) -> IO ()
 withFields = withContinuation fieldsQuery
+
+withIssueTypes :: Show a => ([IssueTypeDetails] -> a) -> IO ()
+withIssueTypes = withContinuation issueTypeQuery
 
 withIssue :: Show a => Text -> (IssueBean -> a) -> IO ()
 withIssue x = withContinuation $ issueQuery x
@@ -159,7 +186,11 @@ withIssue x = withContinuation $ issueQuery x
 withChangelog :: Show a => Text -> (PageBeanChangelog -> a) -> IO ()
 withChangelog x = withContinuation $ changelogQuery x
 
-collectSearchResult :: Text -> Int -> Text -> [IssueBean] -> IO (Either Text [IssueBean])
+createIssue :: CreateIssueRequest -> IO ()
+createIssue x = withContinuation (createIssue' x) Prelude.id
+
+collectSearchResult :: Text -> Int -> Text -> [IssueBean]
+                    -> IO (Either Text [IssueBean])
 collectSearchResult q i f xs = do
   res <- run $ searchQuery q i f
   case res of
@@ -167,5 +198,6 @@ collectSearchResult q i f xs = do
     Right r ->
       if Prelude.null (issues r) 
         then return $ Right xs
-        else collectSearchResult q (Prelude.length (xs ++ (issues r))) f (xs ++ (issues r))
+        else collectSearchResult
+          q (Prelude.length (xs ++ (issues r))) f (xs ++ (issues r))
 
