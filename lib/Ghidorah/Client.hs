@@ -169,3 +169,13 @@ collectSearchResult q i f xs = do
         then return $ Right xs
         else collectSearchResult q (Prelude.length (xs ++ (issues r))) f (xs ++ (issues r))
 
+collectSearchResult' :: Text -> Int -> Int -> Text -> [IssueBean] -> IO (Either Text [IssueBean])
+collectSearchResult' q i j f xs = do
+  res <- run $ searchQuery q i f
+  case res of
+    Left e -> return $ Left e 
+    Right r ->
+      if Prelude.length xs >= j
+        then return $ Right xs
+        else collectSearchResult' q (Prelude.length (xs ++ (issues r))) j f (xs ++ (issues r))
+
