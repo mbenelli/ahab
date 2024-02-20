@@ -111,14 +111,14 @@ query q f cfg = search (Just q) (Just 0) (Just 100) (Just "changelog")
                        (Just $ user cfg) (Just $ auth cfg)
 
 searchQuery :: Text -> Int -> [Text] -> Config -> ClientM SearchResponse
-searchQuery jql start fields cfg = search (Just jql)
-                                          (Just start)
-                                          (Just 100)
-                                          (Just "changelog")
-                                          (Just $ T.concat $ L.intersperse "," fields)
-                                          (Just True)
-                                          (Just $ user cfg)
-                                          (Just $ auth cfg)
+searchQuery jql start fs cfg = search (Just jql)
+                                      (Just start)
+                                      (Just 100)
+                                      (Just "changelog")
+                                      (Just $ T.concat $ L.intersperse "," fs)
+                                      (Just True)
+                                      (Just $ user cfg)
+                                      (Just $ auth cfg)
 
 fieldsQuery :: Config -> ClientM [FieldDetails]
 fieldsQuery cfg = getFields
@@ -169,10 +169,12 @@ fields =
   [ "id"
   , "key"
   , "project"
+  , "issuetype"
   , "summary"
   , "status"
   , "created"
   , "creator"
+  , "priority"
 
   , "description"
   , "assignee"

@@ -216,6 +216,15 @@ data IssueEvent = IssueEvent
   , issueName_name :: !Text
   }
 
+data Priority = Priority
+  { id :: !Text
+  , name :: !Text
+  , self :: !Text
+  , iconUrl :: !Text
+  } deriving (Show, Generic)
+
+instance FromJSON Priority where parseJSON = genericParseJSON options
+
 data Component = Component
   { component_id :: !Text
   , component_name :: !Text
@@ -267,10 +276,12 @@ instance FromJSON Version where parseJSON = genericParseJSON options
 
 data IssueObject = IssueObject
   { issueObject_project :: !Project
+  , issueObject_issuetype :: !IssueTypeDetails
   , issueObject_summary :: !Text
   , issueObject_status :: !Status
   , issueObject_created :: !Text
   , issueObject_creator :: !UserDetails
+  , issueObject_priority :: !Priority
   , issueObject_description :: !(Maybe Text)
   , issueObject_assignee :: !(Maybe UserDetails)
   , issueObject_reporter :: !(Maybe UserDetails)
