@@ -2,27 +2,28 @@
 
 module Ghidorah.Utils where
 
-import Prelude (Either(..), IO, return, ($), mapM_)
+import Prelude (Either(..), IO, return, ($), mapM_, map)
 
 import Data.HashMap.Strict (HashMap, fromList, lookup, toList)
-import Data.Maybe (mapMaybe, Maybe(..), fromMaybe)
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Text (Text)
 import System.IO (FilePath, openFile, IOMode(WriteMode))
 import Text.Printf
 
 import Ghidorah.Client (run, fieldsQuery)
-import Ghidorah.Types (field_name, field_id)
+import Ghidorah.Jira.Types (fieldDetails_name, fieldDetails_id)
 
 fields :: IO (Either Text (HashMap Text Text))
 fields = do
   r <- run fieldsQuery
   case r of
     Left e -> return (Left e)
-    Right fs -> return $ Right $ fromList $ mapMaybe getNameId fs
+    Right fs -> return $ Right $ fromList $ map getNameId fs
     where
-      getNameId x = case (field_name x, field_id x) of 
-        (Just n, Just i) -> Just (n, i)
-        (_, _) ->  Nothing
+      getNameId x = (fieldDetails_name x, fieldDetails_id x)
+--      getNameId x = case (fieldDetails_name x, fieldDetails_id x) of 
+--        (Just n, Just i) -> Just (n, i)
+--        (_, _) ->  Nothing
 
 searchField :: Text -> IO Text
 searchField f = do

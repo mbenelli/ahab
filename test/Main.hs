@@ -2,7 +2,14 @@
 
 module Main (main) where
 
+import Control.Applicative
+import Data.Aeson (FromJSON, eitherDecode)
+import Data.ByteString.Lazy as B
+import Data.Text
+
 import Ghidorah.Config
+import Ghidorah.Jira.Types as JT
+import Ghidorah.Types as T
 
 import Test.HUnit
 
@@ -15,6 +22,7 @@ sampleConfig = Config
   , crtPath = Just "path_to_certificate.crt"
   , keyPath = Just "path_to_key.key"
   }
+
 
 tests :: Test
 tests = TestList
@@ -33,6 +41,15 @@ tests = TestList
        case c of
          Left err -> assertFailure $ "Error: " ++ show err
          Right conf -> assertEqual "" (url conf) (url sampleConfig)
+     )
+  , TestLabel "Types"
+     (
+     TestCase $ do
+       let j = B.readFile "test/samples/issue.json"
+       i <- (eitherDecode <$> j) :: IO (Either String JT.IssueBean)
+       case i of
+         Left s -> assertFailure $ "Error: " ++ show s
+         Right x -> assertEqual "" (JT.issue_key x) "TP-1"
      )
   ]
 

@@ -11,7 +11,7 @@ import GHC.Generics
 import Network.Wai.Handler.Warp
 import Servant
 
-import Ghidorah.Types (Changelog, IssueBean, UserDetail)
+import Ghidorah.Jira.Types (Changelog, IssueBean, UserDetail)
 
 
 data IssueRequest = IssueRequest

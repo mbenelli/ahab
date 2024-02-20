@@ -1,0 +1,47 @@
+{
+	"id": "1",
+	"key": "TP-1",
+	"fields": [
+		{
+			"fieldId": "issuetype",
+			"fieldName": "Task"
+		},
+		{
+			"fieldId": "summary",
+			"fieldName": "Sample Task"
+		},
+		{
+			"fieldId": "project",
+			"fieldName": "TP"
+		},
+		{
+			"fieldId": "status",
+			"fieldName": "new"
+		},
+		{
+			"fieldId": "created",
+			"fieldName": "2024-01-01"
+		},
+		{
+			"fieldId": "creator",
+			"fieldName": "johndoe"
+		},
+		{
+			"fieldId": "description",
+			"fieldName": "This is just a sample task."
+		},
+		{
+			"fieldId": "assignee",
+			"fieldName": "johndoe"
+		},
+		{
+			"fieldId": "reporter",
+			"fieldName": "bigboss"
+		},
+		{
+			"fieldId": "customfield_007",
+			"fieldName": "classificationLevel",
+			"fieldValue": "internal"
+		}
+	]
+}

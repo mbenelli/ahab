@@ -20,7 +20,7 @@ import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
 import Text.Pretty.Simple
 
 import Ghidorah.Config
-import Ghidorah.Types
+import Ghidorah.Jira.Types
 
 
 -- Certificate handling
