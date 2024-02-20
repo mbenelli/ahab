@@ -5,6 +5,7 @@
 module Ghidorah.Client where
 
 import Data.Default (Default(def))
+import Data.List as L
 import Data.Proxy (Proxy(..))
 import Data.Text as T
 import Network.Connection (TLSSettings(TLSSettings))
@@ -109,12 +110,12 @@ query q f cfg = search (Just q) (Just 0) (Just 100) (Just "changelog")
                        (Just f) (Just True)
                        (Just $ user cfg) (Just $ auth cfg)
 
-searchQuery :: Text -> Int -> Text -> Config -> ClientM SearchResponse
+searchQuery :: Text -> Int -> [Text] -> Config -> ClientM SearchResponse
 searchQuery jql start fields cfg = search (Just jql)
                                           (Just start)
                                           (Just 100)
                                           (Just "changelog")
-                                          (Just fields)
+                                          (Just $ T.concat $ L.intersperse "," fields)
                                           (Just True)
                                           (Just $ user cfg)
                                           (Just $ auth cfg)
@@ -160,6 +161,30 @@ run f = do
         Left err -> return $ Left $ append "Error: " $ pack $ show err
         Right r -> return $ Right r
 
+-- Jira most useful fields
+--
+
+fields :: [Text]
+fields =
+  [ "id"
+  , "key"
+  , "project"
+  , "summary"
+  , "status"
+  , "created"
+  , "creator"
+
+  , "description"
+  , "assignee"
+  , "reporter"
+  , "fixVersions"
+  , "versions"
+  , "components"
+  , "issuelink"
+
+  , "resolution"
+  , "resolutiondate"
+  ]
 
 -- Printers
 
@@ -170,9 +195,9 @@ withContinuation f k = do
     Left l -> putStrLn $ unpack l
     Right r -> pPrintNoColor $ k r
 
-withSearchResult :: Show a => Text -> Int -> Text -> (SearchResponse -> a)
+withSearchResult :: Show a => Text -> Int -> [Text] -> (SearchResponse -> a)
                  -> IO ()
-withSearchResult q i f = withContinuation $ searchQuery q i f
+withSearchResult q i fs = withContinuation $ searchQuery q i fs
 
 withFields :: Show a => ([FieldDetails] -> a) -> IO ()
 withFields = withContinuation fieldsQuery
@@ -189,25 +214,25 @@ withChangelog x = withContinuation $ changelogQuery x
 createIssue :: CreateIssueRequest -> IO ()
 createIssue x = withContinuation (createIssue' x) Prelude.id
 
-collectSearchResult :: Text -> Int -> Text -> [IssueBean]
+collectSearchResult :: Text -> Int -> [IssueBean]
                     -> IO (Either Text [IssueBean])
-collectSearchResult q i f xs = do
-  res <- run $ searchQuery q i f
+collectSearchResult q i xs = do
+  res <- run $ searchQuery q i fields
   case res of
     Left e -> return $ Left e 
     Right r ->
       if Prelude.null (issues r) 
         then return $ Right xs
         else collectSearchResult
-          q (Prelude.length (xs ++ (issues r))) f (xs ++ (issues r))
+          q (Prelude.length (xs ++ (issues r))) (xs ++ (issues r))
 
-collectSearchResult' :: Text -> Int -> Int -> Text -> [IssueBean] -> IO (Either Text [IssueBean])
-collectSearchResult' q i j f xs = do
-  res <- run $ searchQuery q i f
+collectSearchResult' :: Text -> Int -> Int -> [IssueBean] -> IO (Either Text [IssueBean])
+collectSearchResult' q i j xs = do
+  res <- run $ searchQuery q i fields
   case res of
     Left e -> return $ Left e 
     Right r ->
       if Prelude.length xs >= j
         then return $ Right xs
-        else collectSearchResult' q (Prelude.length (xs ++ (issues r))) j f (xs ++ (issues r))
+        else collectSearchResult' q (Prelude.length (xs ++ (issues r))) j (xs ++ (issues r))
 
