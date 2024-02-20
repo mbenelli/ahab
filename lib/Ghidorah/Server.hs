@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Ghidorah.Server where
@@ -11,7 +10,8 @@ import GHC.Generics
 import Network.Wai.Handler.Warp
 import Servant
 
-import Ghidorah.Jira.Types (Changelog, IssueBean, UserDetails)
+import Ghidorah.Jira.CustomTypes (IssueBean)
+import Ghidorah.Jira.Types (Changelog, UserDetails)
 
 
 data IssueRequest = IssueRequest

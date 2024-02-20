@@ -21,7 +21,9 @@ import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
 import Text.Pretty.Simple
 
 import Ghidorah.Config
+import Ghidorah.Jira.CustomTypes
 import Ghidorah.Jira.Types
+import Ghidorah.Jira.Api (SearchResponse, CreateIssueRequest, issues)
 
 
 -- Certificate handling

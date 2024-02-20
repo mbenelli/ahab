@@ -21,6 +21,8 @@ library
         Ghidorah.Client
       , Ghidorah.Config
       , Ghidorah.Server
+      , Ghidorah.Jira.Api
+      , Ghidorah.Jira.CustomTypes
       , Ghidorah.Jira.Types
       , Ghidorah.Utils
     -- other-modules:

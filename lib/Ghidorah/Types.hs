@@ -9,7 +9,8 @@ import Data.HashMap.Strict (fromList, filterWithKey, lookup, (!))
 import Data.Text (isPrefixOf)
 import GHC.Generics
 
-import Ghidorah.Jira.Types (IssueBean(..), Field(..))
+import Ghidorah.Jira.CustomTypes (IssueBean(..))
+import Ghidorah.Jira.Types (Field(..))
 
 data IssueType = Task | Story | Bug | Epic | Other
   deriving (Show, Generic)
