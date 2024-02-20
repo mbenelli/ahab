@@ -162,7 +162,7 @@ data AvatarUrlsBean = AvatarUrlsBean
 
 instance FromJSON AvatarUrlsBean
 
-data UserDetail = UserDetail
+data UserDetails = UserDetail
   { user_accountId :: !(Maybe Text)
   , user_accountType :: !(Maybe Text)
   , user_active :: !(Maybe Bool)
@@ -175,11 +175,11 @@ data UserDetail = UserDetail
   , user_timeZone :: !(Maybe Text)
   } deriving (Show, Generic)
 
-instance FromJSON UserDetail where
+instance FromJSON UserDetails where
   parseJSON = genericParseJSON options
 
 data Changelog = Changelog
-  { changelog_author :: !(Maybe UserDetail)
+  { changelog_author :: !(Maybe UserDetails)
   , changelog_created :: !Text
   , changelog_historyMetadata :: !(Maybe HistoryMetadata)
   , changelog_id :: !(Maybe Text)
@@ -209,18 +209,86 @@ data PageOfChangelogs = PageOfChangelogs
   , pog_total :: !(Maybe Int)
   } deriving (Show, Generic)
 
-instance FromJSON PageOfChangelogs where
-  parseJSON = genericParseJSON options
+instance FromJSON PageOfChangelogs where parseJSON = genericParseJSON options
 
 data IssueEvent = IssueEvent
   { issueEvent_id :: !Int
   , issueName_name :: !Text
   }
+
+data Component = Component
+  { component_id :: !Text
+  , component_name :: !Text
+  , component_self :: !Text
+  } deriving (Show, Generic)
+
+instance FromJSON Component where parseJSON = genericParseJSON options
+
+data Resolution = Resolution
+  { resolution_id :: !Text
+  , resolution_name :: !Text
+  , resolution_description :: !Text
+  , resolution_self :: !Text
+  } deriving (Show, Generic)
+
+instance FromJSON Resolution where parseJSON = genericParseJSON options
+
+data StatusCategory = StatusCategory
+  { statusCategory_id :: !Int
+  , statusCategory_key :: !Text
+  , statusCategory_name :: !Text
+  , statusCategory_self :: !Text
+  } deriving (Show, Generic)
+
+instance FromJSON StatusCategory where parseJSON = genericParseJSON options
+
+data Status = Status
+  { status_id :: !Text
+  , status_name :: !Text
+  , status_description :: !Text
+  , status_self :: !Text
+  , status_iconUrl :: !Text
+  , status_statusCategory :: !StatusCategory
+  } deriving (Show, Generic)
+
+instance FromJSON Status where parseJSON = genericParseJSON options
+
+data Version = Version
+  { version_id :: !Text
+  , version_name :: !Text
+  , version_description :: !(Maybe Text)
+  , version_releaseDate :: !(Maybe Text)
+  , version_released :: !(Maybe Bool)
+  , version_archived :: !(Maybe Bool)
+  , version_self :: !(Maybe Text)
+  } deriving (Show, Generic)
+
+instance FromJSON Version where parseJSON = genericParseJSON options
+
+data IssueObject = IssueObject
+  { issueObject_project :: !Project
+  , issueObject_summary :: !Text
+  , issueObject_status :: !Status
+  , issueObject_created :: !Text
+  , issueObject_creator :: !UserDetails
+  , issueObject_description :: !(Maybe Text)
+  , issueObject_assignee :: !(Maybe UserDetails)
+  , issueObject_reporter :: !(Maybe UserDetails)
+  , issueObject_fixVersions :: !(Maybe [Version])
+  , issueObject_versions :: !(Maybe [Version])
+  , issueObject_components :: !(Maybe [Component])
+  , issueObject_issuelink :: !(Maybe IssueLink)
+  , issueObject_resolution :: !(Maybe Resolution)
+  , issueObject_resolutiondate :: !(Maybe Text)
+  } deriving (Show, Generic)
+
+instance FromJSON IssueObject where parseJSON = genericParseJSON options
+
 data IssueBean = IssueBean
   { issue_changelog :: !(Maybe PageOfChangelogs)
   , issue_editmeta :: !(Maybe Text) -- IssueUpdateMetadata
   , issue_expand :: !(Maybe Text)
-  , issue_fields :: !(Maybe Object)
+  , issue_fields :: !(Maybe IssueObject)
   , issue_fieldsToInclude :: !(Maybe IncludedFields)
   --
   , issue_id :: !Text
@@ -267,6 +335,8 @@ data IssueTypeDetails = IssueTypeDetails
 instance FromJSON IssueTypeDetails where
   parseJSON = genericParseJSON options
 
+-- For creating a Issue
+
 data IssueType = IssueType
   { issueType_id :: !Text
   } deriving (Show, Generic)
@@ -283,31 +353,27 @@ data Project = Project
 instance ToJSON Project where
   toEncoding = genericToEncoding options
 
-data IssueObject = IssueObject
+instance FromJSON Project where
+  parseJSON = genericParseJSON options
+
+data IssueObject' = IssueObject'
   { i_summary :: !Text
   , i_description :: !(Maybe Text)
   , i_issuetype :: !IssueType
   , i_project :: !Project
   } deriving (Show, Generic) 
 
-instance ToJSON IssueObject where
+instance ToJSON IssueObject' where
  toEncoding = genericToEncoding options
 
 data CreateIssueRequest = CreateIssueRequest
-   { createIssue_fields :: IssueObject
+   { createIssue_fields :: IssueObject'
    } deriving (Show, Generic)
  
 instance ToJSON CreateIssueRequest where
  toEncoding = genericToEncoding options
 
 -- Issue Description and Comments
-
-data Author = Author
-  { accountId :: !Text
-  , active :: !Bool
-  , displayName :: !Text
-  , self :: !Text
-  }
 
 data Content = Content
   { condent_type :: !Text
@@ -326,13 +392,13 @@ data Description = Description
   }
 
 data Comment = Comment
-  { comment_author :: !Author
+  { comment_author :: !UserDetails
   , comment_body :: !Description
   , comment_created :: !Text
   , comment_id :: !Text
   , comment_self :: !Text
   , comment_updated :: !(Maybe Text)
-  , comment_updateAuthor :: !(Maybe Author)
+  , comment_updateAuthor :: !(Maybe UserDetails)
   }
 
 -- Issue Links
@@ -342,25 +408,32 @@ data LinkType = LinkType
   , linkType_name :: !Text
   , linkType_inward :: !Text
   , linkType_outward :: !Text
-  }
+  } deriving (Show, Generic)
+
+instance FromJSON LinkType where parseJSON = genericParseJSON options
 
 data LinkedIssue = LinkedIssue
   { linkedIssue_id :: !Text
   , linkedIssue_key :: !Text
   , linkedIssue_Status :: !Text
-  }
+  } deriving (Show, Generic)
+
+instance FromJSON LinkedIssue where parseJSON = genericParseJSON options
 
 data IssueLink = IssueLink
   { issueLink_id :: !Text
   , issueLink_outwardIssue :: !(Maybe LinkedIssue)
   , issueLink_inwardIssue :: !(Maybe LinkedIssue)
   , issueLink_type :: !LinkType
-  }
+  } deriving (Show, Generic)
+
+instance FromJSON IssueLink where parseJSON = genericParseJSON options
 
 data SubTask = SubTask
   { subTask_id :: !Text
   , subTask_outwardIssue :: !LinkedIssue
   , subTask_type :: !LinkType
-  }
+  } deriving (Show, Generic)
 
+instance FromJSON SubTask where parseJSON = genericParseJSON options
 

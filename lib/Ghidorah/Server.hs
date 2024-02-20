@@ -11,14 +11,14 @@ import GHC.Generics
 import Network.Wai.Handler.Warp
 import Servant
 
-import Ghidorah.Jira.Types (Changelog, IssueBean, UserDetail)
+import Ghidorah.Jira.Types (Changelog, IssueBean, UserDetails)
 
 
 data IssueRequest = IssueRequest
   { timestamp :: !(Maybe Text)
   , webhookEvent :: !(Maybe Text)
   , issue_event_type_name :: !(Maybe Text)
-  , user :: !(Maybe UserDetail)
+  , user :: !(Maybe UserDetails)
   , issue :: !(Maybe IssueBean)
   , changelog :: !(Maybe Changelog)
 } deriving (Show, Generic)
