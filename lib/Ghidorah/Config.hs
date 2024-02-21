@@ -3,7 +3,7 @@
 
 module Ghidorah.Config where
 
-import Data.Text
+import Data.Text as T
 import Data.Yaml
 import GHC.Generics
 import System.Directory
@@ -18,6 +18,10 @@ data Config = Config
   } deriving (Eq, Show, Generic)
 
 instance FromJSON Config
+
+auth :: Config -> Text
+auth c = T.unwords [authorization c, token c]
+
 
 defaultConfigFile ::  IO String
 defaultConfigFile = getXdgDirectory XdgConfig "ghidorah/config.yaml"

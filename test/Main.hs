@@ -8,8 +8,7 @@ import Data.ByteString.Lazy as B
 import Data.Text
 
 import Ghidorah.Config
-import Ghidorah.Jira.Types as JT
-import Ghidorah.Types as T
+import Ghidorah.Jira.CustomTypes as JT
 
 import Test.HUnit
 

@@ -1,12 +1,9 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Ghidorah.Client where
 
 import Data.Default (Default(def))
-import Data.List as L
-import Data.Proxy (Proxy(..))
 import Data.Text as T
 import Network.Connection (TLSSettings(TLSSettings))
 import Network.HTTP.Client (newManager, Manager)
@@ -15,15 +12,13 @@ import Network.TLS (credentialLoadX509, onCertificateRequest,
                     onServerCertificate, clientHooks, clientSupported,
                     supportedCiphers, defaultParamsClient) 
 import Network.TLS.Extra.Cipher (ciphersuite_strong)
-import Servant.API (JSON, Header, QueryParam, Capture, ReqBody,
-                    type (:>), type (:<|>)(..), Get, Post)
-import Servant.Client (client, mkClientEnv, runClientM, parseBaseUrl, ClientM)
+import Servant.Client (mkClientEnv, runClientM, parseBaseUrl, ClientM)
 import Text.Pretty.Simple
 
 import Ghidorah.Config
 import Ghidorah.Jira.CustomTypes
 import Ghidorah.Jira.Types
-import Ghidorah.Jira.Api (SearchResponse, CreateIssueRequest, issues)
+import Ghidorah.Jira.Api
 
 
 -- Certificate handling
@@ -45,102 +40,6 @@ mkMngr hostName crtFile keyFile = do
       tlsSettings = TLSSettings clientParams
   newManager $ mkManagerSettings tlsSettings Nothing
 
-
--- API
-
-type API = "rest" :> "api" :> "2" :> "search"
-  :> QueryParam "jql" Text
-  :> QueryParam "startAt" Int
-  :> QueryParam "maxResults" Int
-  :> QueryParam "expand" Text
-  :> QueryParam "fields" Text
-  :> QueryParam "fieldsByKeys" Bool
-  :> Header "X-AUSERNAME" Text 
-  :> Header "Authorization" Text
-  :> Get '[JSON] SearchResponse
-  :<|>
-  "rest" :> "api" :> "2" :> "field"
-  :> Header "X-AUSERNAME" Text
-  :> Header "Authorization" Text
-  :> Get '[JSON] [FieldDetails]
-  :<|>
-  "rest" :> "api" :> "2" :> "issuetype"
-  :> Header "X-AUSERNAME" Text
-  :> Header "Authorization" Text
-  :> Get '[JSON] [IssueTypeDetails]
-  :<|>
-  "rest" :> "api" :> "2" :> "issue"
-  :> ReqBody '[JSON] CreateIssueRequest
-  :> Header "X-AUSERNAME" Text
-  :> Header "Authorization" Text
-  :> Post '[JSON] IssueBean
-  :<|>
-  "rest" :> "api" :> "2" :> "issue" :> Capture "issueid" Text
-  :> Header "X-AUSERNAME" Text
-  :> Header "Authorization" Text
-  :> Get '[JSON] IssueBean
-  :<|>
-  "rest" :> "api" :> "2" :> "issue" :> Capture "issueid" Text :> "changelog"
-  :> Header "X-AUSERNAME" Text
-  :> Header "Authorization" Text
-  :> Get '[JSON] PageBeanChangelog
-
-api :: Proxy API
-api = Proxy
-
-search :: Maybe Text -> Maybe Int -> Maybe Int -> Maybe Text -> Maybe Text -> Maybe Bool
-       -> Maybe Text -> Maybe Text
-       -> ClientM SearchResponse
-
-getFields :: Maybe Text -> Maybe Text -> ClientM [FieldDetails]
-
-issueTypes :: Maybe Text -> Maybe Text -> ClientM [IssueTypeDetails]
-
-createIssueReq :: CreateIssueRequest-> Maybe Text -> Maybe Text -> ClientM IssueBean
-
-issue :: Text -> Maybe Text -> Maybe Text -> ClientM IssueBean
-
-changelogs :: Text -> Maybe Text -> Maybe Text -> ClientM PageBeanChangelog
-
-search :<|> getFields :<|> issueTypes :<|> createIssueReq :<|> issue :<|> changelogs = client api
-
-auth :: Config -> Text
-auth c = T.unwords [authorization c, token c]
-
-query :: Text -> Text -> Config -> ClientM SearchResponse
-query q f cfg = search (Just q) (Just 0) (Just 100) (Just "changelog")
-                       (Just f) (Just True)
-                       (Just $ user cfg) (Just $ auth cfg)
-
-searchQuery :: Text -> Int -> [Text] -> Config -> ClientM SearchResponse
-searchQuery jql start fs cfg = search (Just jql)
-                                      (Just start)
-                                      (Just 100)
-                                      (Just "changelog")
-                                      (Just $ T.concat $ L.intersperse "," fs)
-                                      (Just True)
-                                      (Just $ user cfg)
-                                      (Just $ auth cfg)
-
-fieldsQuery :: Config -> ClientM [FieldDetails]
-fieldsQuery cfg = getFields
-  (Just $ user cfg) (Just $ auth cfg)
-
-issueTypeQuery :: Config -> ClientM [IssueTypeDetails]
-issueTypeQuery cfg = issueTypes
-  (Just $ user cfg) (Just $ auth cfg)
-
-createIssue' :: CreateIssueRequest -> Config -> ClientM IssueBean
-createIssue' x cfg = createIssueReq x
-  (Just $ user cfg) (Just $ auth cfg)
-
-issueQuery :: Text -> Config -> ClientM IssueBean
-issueQuery x cfg = issue x
-  (Just $ user cfg) (Just $ auth cfg)
-
-changelogQuery :: Text -> Config -> ClientM PageBeanChangelog
-changelogQuery x cfg = changelogs x
-  (Just $ user cfg) (Just $ auth cfg)
 
 
 
@@ -166,8 +65,8 @@ run f = do
 -- Jira most useful fields
 --
 
-fields :: [Text]
-fields =
+defaultFields :: [Text]
+defaultFields =
   [ "id"
   , "key"
   , "project"
@@ -221,7 +120,7 @@ createIssue x = withContinuation (createIssue' x) Prelude.id
 collectSearchResult :: Text -> Int -> [IssueBean]
                     -> IO (Either Text [IssueBean])
 collectSearchResult q i xs = do
-  res <- run $ searchQuery q i fields
+  res <- run $ searchQuery q i defaultFields
   case res of
     Left e -> return $ Left e 
     Right r ->
@@ -232,7 +131,7 @@ collectSearchResult q i xs = do
 
 collectSearchResult' :: Text -> Int -> Int -> [IssueBean] -> IO (Either Text [IssueBean])
 collectSearchResult' q i j xs = do
-  res <- run $ searchQuery q i fields
+  res <- run $ searchQuery q i defaultFields
   case res of
     Left e -> return $ Left e 
     Right r ->
