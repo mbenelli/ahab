@@ -3,47 +3,55 @@
 
 module Ghidorah.Client where
 
-import Data.Default (Default(def))
+import Data.Default (Default (def))
 import Data.Text as T
-import Network.Connection (TLSSettings(TLSSettings))
-import Network.HTTP.Client (newManager, Manager)
-import Network.HTTP.Client.TLS (mkManagerSettings, newTlsManager)
-import Network.TLS (credentialLoadX509, onCertificateRequest,
-                    onServerCertificate, clientHooks, clientSupported,
-                    supportedCiphers, defaultParamsClient) 
-import Network.TLS.Extra.Cipher (ciphersuite_strong)
-import Servant.Client (mkClientEnv, runClientM, parseBaseUrl, ClientM)
-import Text.Pretty.Simple
-
 import Ghidorah.Config
+import Ghidorah.Jira.Api
 import Ghidorah.Jira.CustomTypes
 import Ghidorah.Jira.Types
-import Ghidorah.Jira.Api
-
+import Network.Connection (TLSSettings (TLSSettings))
+import Network.HTTP.Client (Manager, newManager)
+import Network.HTTP.Client.TLS (mkManagerSettings, newTlsManager)
+import Network.TLS
+  ( clientHooks,
+    clientSupported,
+    credentialLoadX509,
+    defaultParamsClient,
+    onCertificateRequest,
+    onServerCertificate,
+    supportedCiphers,
+  )
+import Network.TLS.Extra.Cipher (ciphersuite_strong)
+import Servant.Client (ClientM, mkClientEnv, parseBaseUrl, runClientM)
+import Text.Pretty.Simple
 
 -- Certificate handling
 
-
-mkMngr :: Text -> Text -> Text-> IO Manager
+mkMngr :: Text -> Text -> Text -> IO Manager
 mkMngr hostName crtFile keyFile = do
-  creds <- either error Just `fmap` credentialLoadX509
-    (unpack crtFile) (unpack keyFile)
-  let hooks = def { onCertificateRequest = \_ -> return creds
-                  -- FIXME: it bypass server validation
-                  , onServerCertificate = \_ _ _ _ -> return []
-                  }
-      clientParams = (defaultParamsClient (unpack hostName) "")
-                     { clientHooks = hooks
-                     , clientSupported = def
-                       { supportedCiphers = ciphersuite_strong }
-                     }
+  creds <-
+    either error Just
+      `fmap` credentialLoadX509
+        (unpack crtFile)
+        (unpack keyFile)
+  let hooks =
+        def
+          { onCertificateRequest = \_ -> return creds,
+            -- FIXME: it bypass server validation
+            onServerCertificate = \_ _ _ _ -> return []
+          }
+      clientParams =
+        (defaultParamsClient (unpack hostName) "")
+          { clientHooks = hooks,
+            clientSupported =
+              def
+                { supportedCiphers = ciphersuite_strong
+                }
+          }
       tlsSettings = TLSSettings clientParams
   newManager $ mkManagerSettings tlsSettings Nothing
 
-
-
-
-run :: (Config -> ClientM a)  -> IO (Either Text a)
+run :: (Config -> ClientM a) -> IO (Either Text a)
 run f = do
   file <- defaultConfigFile
   c <- readConfig file
@@ -52,10 +60,10 @@ run f = do
     Right cfg -> do
       manager' <- case crtPath cfg of
         Just cert -> case keyPath cfg of
-              Just ckey -> mkMngr (url cfg) cert ckey
-              Nothing -> newTlsManager
+          Just ckey -> mkMngr (url cfg) cert ckey
+          Nothing -> newTlsManager
         Nothing -> newTlsManager
-      u <- parseBaseUrl  $ unpack (url cfg)
+      u <- parseBaseUrl $ unpack (url cfg)
       let g = f cfg
       res <- runClientM g (mkClientEnv manager' u)
       case res of
@@ -67,75 +75,83 @@ run f = do
 
 defaultFields :: [Text]
 defaultFields =
-  [ "id"
-  , "key"
-  , "project"
-  , "issuetype"
-  , "summary"
-  , "status"
-  , "created"
-  , "creator"
-  , "priority"
-
-  , "description"
-  , "assignee"
-  , "reporter"
-  , "fixVersions"
-  , "versions"
-  , "components"
-  , "issuelink"
-
-  , "resolution"
-  , "resolutiondate"
+  [ "id",
+    "key",
+    "project",
+    "issuetype",
+    "summary",
+    "status",
+    "created",
+    "creator",
+    "priority",
+    "description",
+    "assignee",
+    "reporter",
+    "fixVersions",
+    "versions",
+    "components",
+    "issuelink",
+    "resolution",
+    "resolutiondate"
   ]
 
 -- Printers
 
-withContinuation :: Show b => (Config -> ClientM a) -> (a -> b) -> IO ()
+withContinuation :: (Show b) => (Config -> ClientM a) -> (a -> b) -> IO ()
 withContinuation f k = do
   res <- run f
   case res of
     Left l -> putStrLn $ unpack l
     Right r -> pPrintNoColor $ k r
 
-withSearchResult :: Show a => Text -> Int -> [Text] -> (SearchResponse -> a)
-                 -> IO ()
+withSearchResult ::
+  (Show a) =>
+  Text ->
+  Int ->
+  [Text] ->
+  (SearchResponse -> a) ->
+  IO ()
 withSearchResult q i fs = withContinuation $ searchQuery q i fs
 
-withFields :: Show a => ([FieldDetails] -> a) -> IO ()
+withFields :: (Show a) => ([FieldDetails] -> a) -> IO ()
 withFields = withContinuation fieldsQuery
 
-withIssueTypes :: Show a => ([IssueTypeDetails] -> a) -> IO ()
+withIssueTypes :: (Show a) => ([IssueTypeDetails] -> a) -> IO ()
 withIssueTypes = withContinuation issueTypeQuery
 
-withIssue :: Show a => Text -> (IssueBean -> a) -> IO ()
+withIssue :: (Show a) => Text -> (IssueBean -> a) -> IO ()
 withIssue x = withContinuation $ issueQuery x
 
-withChangelog :: Show a => Text -> (PageBeanChangelog -> a) -> IO ()
+withChangelog :: (Show a) => Text -> (PageBeanChangelog -> a) -> IO ()
 withChangelog x = withContinuation $ changelogQuery x
 
 createIssue :: CreateIssueRequest -> IO ()
 createIssue x = withContinuation (createIssue' x) Prelude.id
 
-collectSearchResult :: Text -> Int -> [IssueBean]
-                    -> IO (Either Text [IssueBean])
+collectSearchResult ::
+  Text ->
+  Int ->
+  [IssueBean] ->
+  IO (Either Text [IssueBean])
 collectSearchResult q i xs = do
   res <- run $ searchQuery q i defaultFields
   case res of
-    Left e -> return $ Left e 
+    Left e -> return $ Left e
     Right r ->
-      if Prelude.null (issues r) 
+      if Prelude.null (issues r)
         then return $ Right xs
-        else collectSearchResult
-          q (Prelude.length (xs ++ (issues r))) (xs ++ (issues r))
+        else
+          collectSearchResult
+            q
+            (Prelude.length (xs ++ (issues r)))
+            (xs ++ (issues r))
 
 collectSearchResult' :: Text -> Int -> Int -> [IssueBean] -> IO (Either Text [IssueBean])
 collectSearchResult' q i j xs = do
   res <- run $ searchQuery q i defaultFields
   case res of
-    Left e -> return $ Left e 
+    Left e -> return $ Left e
     Right r ->
       if Prelude.length xs >= j
         then return $ Right xs
         else collectSearchResult' q (Prelude.length (xs ++ (issues r))) j (xs ++ (issues r))
-

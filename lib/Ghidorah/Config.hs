@@ -9,24 +9,22 @@ import GHC.Generics
 import System.Directory
 
 data Config = Config
-  { url :: !Text
-  , user :: !Text
-  , authorization :: !Text
-  , token :: !Text
-  , crtPath :: !(Maybe Text)
-  , keyPath :: !(Maybe Text)
-  } deriving (Eq, Show, Generic)
+  { url :: !Text,
+    user :: !Text,
+    authorization :: !Text,
+    token :: !Text,
+    crtPath :: !(Maybe Text),
+    keyPath :: !(Maybe Text)
+  }
+  deriving (Eq, Show, Generic)
 
 instance FromJSON Config
 
 auth :: Config -> Text
 auth c = T.unwords [authorization c, token c]
 
-
-defaultConfigFile ::  IO String
+defaultConfigFile :: IO String
 defaultConfigFile = getXdgDirectory XdgConfig "ghidorah/config.yaml"
 
-
 readConfig :: String -> IO (Either ParseException Config)
-readConfig = decodeFileEither 
-
+readConfig = decodeFileEither
