@@ -380,7 +380,7 @@ instance ToJSON IssueType where
   toEncoding = genericToEncoding options
 
 data Project = Project
-  { projcet_id :: !Text,
+  { project_id :: !Text,
     project_key :: !Text,
     project_name :: !Text
   }
