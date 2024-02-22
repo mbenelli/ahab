@@ -32,6 +32,9 @@ data JsonTypeBean = JsonTypeBean
 instance FromJSON JsonTypeBean where
   parseJSON = genericParseJSON options
 
+instance ToJSON JsonTypeBean where
+  toJSON = genericToJSON options
+
 data UpdateProjectCategory = UpdateProjectCategory
   { updateProjectCategory_id :: !Text,
     updateProjectCategory_name :: !Text,
@@ -42,6 +45,9 @@ data UpdateProjectCategory = UpdateProjectCategory
 
 instance FromJSON UpdateProjectCategory where
   parseJSON = genericParseJSON options
+
+instance ToJSON UpdateProjectCategory where
+  toJSON = genericToJSON options
 
 data ProjectDetails = ProjectDetails
   { projectDetails_avatarUrls :: !(Maybe AvatarUrlsBean),
@@ -58,6 +64,9 @@ data ProjectDetails = ProjectDetails
 instance FromJSON ProjectDetails where
   parseJSON = genericParseJSON options
 
+instance ToJSON ProjectDetails where
+  toJSON = genericToJSON options
+
 data Scope = Scope
   { scope_project :: !ProjectDetails,
     scope_type :: !Text
@@ -66,6 +75,9 @@ data Scope = Scope
 
 instance FromJSON Scope where
   parseJSON = genericParseJSON options
+
+instance ToJSON Scope where
+  toJSON = genericToJSON options
 
 data Field = Field
   { fieldId' :: !Text,
@@ -118,6 +130,9 @@ data FieldDetails = FieldDetails
 instance FromJSON FieldDetails where
   parseJSON = genericParseJSON options
 
+instance ToJSON FieldDetails where
+  toJSON = genericToJSON options
+
 data IncludedFields = IncludedFields
   { actuallyIncluded :: ![Text],
     excluded :: ![Text],
@@ -126,6 +141,8 @@ data IncludedFields = IncludedFields
   deriving (Show, Generic)
 
 instance FromJSON IncludedFields
+
+instance ToJSON IncludedFields
 
 data ChangeDetails = ChangeDetails
   { field :: !(Maybe Text),
@@ -140,6 +157,8 @@ data ChangeDetails = ChangeDetails
 
 instance FromJSON ChangeDetails
 
+instance ToJSON ChangeDetails
+
 data HistoryMetadataPartecipant = HistoryMetadataPartecipant
   { hmp_avatarUrl :: !(Maybe Text),
     hmp_displayName :: !(Maybe Text),
@@ -152,6 +171,9 @@ data HistoryMetadataPartecipant = HistoryMetadataPartecipant
 
 instance FromJSON HistoryMetadataPartecipant where
   parseJSON = genericParseJSON options
+
+instance ToJSON HistoryMetadataPartecipant where
+  toJSON = genericToJSON options
 
 data HistoryMetadata = HistoryMetadata
   { activityDescription :: !(Maybe Text),
@@ -168,6 +190,8 @@ data HistoryMetadata = HistoryMetadata
 
 instance FromJSON HistoryMetadata
 
+instance ToJSON HistoryMetadata
+
 data AvatarUrlsBean = AvatarUrlsBean
   { avatar16x16 :: !(Maybe Text),
     avatar24x24 :: !(Maybe Text),
@@ -177,6 +201,8 @@ data AvatarUrlsBean = AvatarUrlsBean
   deriving (Show, Generic)
 
 instance FromJSON AvatarUrlsBean
+
+instance ToJSON AvatarUrlsBean
 
 data UserDetails = UserDetail
   { user_accountId :: !(Maybe Text),
@@ -195,6 +221,9 @@ data UserDetails = UserDetail
 instance FromJSON UserDetails where
   parseJSON = genericParseJSON options
 
+instance ToJSON UserDetails where
+  toJSON = genericToJSON options
+
 data Changelog = Changelog
   { changelog_author :: !(Maybe UserDetails),
     changelog_created :: !Text,
@@ -206,6 +235,9 @@ data Changelog = Changelog
 
 instance FromJSON Changelog where
   parseJSON = genericParseJSON options
+
+instance ToJSON Changelog where
+  toJSON = genericToJSON options
 
 data PageBeanChangelog = PageBeanChangelog
   { pbc_isLast :: !(Maybe Bool), -- wether is last page
@@ -221,6 +253,9 @@ data PageBeanChangelog = PageBeanChangelog
 instance FromJSON PageBeanChangelog where
   parseJSON = genericParseJSON options
 
+instance ToJSON PageBeanChangelog where
+  toJSON = genericToJSON options
+
 data PageOfChangelogs = PageOfChangelogs
   { pog_histories :: !(Maybe [Changelog]),
     pog_maxResults :: !(Maybe Int),
@@ -230,6 +265,8 @@ data PageOfChangelogs = PageOfChangelogs
   deriving (Show, Generic)
 
 instance FromJSON PageOfChangelogs where parseJSON = genericParseJSON options
+
+instance ToJSON PageOfChangelogs where toJSON = genericToJSON options
 
 data IssueEvent = IssueEvent
   { issueEvent_id :: !Int,
@@ -246,6 +283,8 @@ data Priority = Priority
 
 instance FromJSON Priority where parseJSON = genericParseJSON options
 
+instance ToJSON Priority where toJSON = genericToJSON options
+
 data Component = Component
   { component_id :: !Text,
     component_name :: !Text,
@@ -254,6 +293,8 @@ data Component = Component
   deriving (Show, Generic)
 
 instance FromJSON Component where parseJSON = genericParseJSON options
+
+instance ToJSON Component where toJSON = genericToJSON options
 
 data Resolution = Resolution
   { resolution_id :: !Text,
@@ -265,6 +306,8 @@ data Resolution = Resolution
 
 instance FromJSON Resolution where parseJSON = genericParseJSON options
 
+instance ToJSON Resolution where toJSON = genericToJSON options
+
 data StatusCategory = StatusCategory
   { statusCategory_id :: !Int,
     statusCategory_key :: !Text,
@@ -274,6 +317,8 @@ data StatusCategory = StatusCategory
   deriving (Show, Generic)
 
 instance FromJSON StatusCategory where parseJSON = genericParseJSON options
+
+instance ToJSON StatusCategory where toJSON = genericToJSON options
 
 data Status = Status
   { status_id :: !Text,
@@ -287,6 +332,8 @@ data Status = Status
 
 instance FromJSON Status where parseJSON = genericParseJSON options
 
+instance ToJSON Status where toJSON = genericToJSON options
+
 data Version = Version
   { version_id :: !Text,
     version_name :: !Text,
@@ -299,6 +346,8 @@ data Version = Version
   deriving (Show, Generic)
 
 instance FromJSON Version where parseJSON = genericParseJSON options
+
+instance ToJSON Version where toJSON = genericToJSON options
 
 data IssueTypeDetails = IssueTypeDetails
   { itd_avatarId :: !(Maybe Int),
@@ -316,6 +365,9 @@ data IssueTypeDetails = IssueTypeDetails
 
 instance FromJSON IssueTypeDetails where
   parseJSON = genericParseJSON options
+
+instance ToJSON IssueTypeDetails where
+  toJSON = genericToJSON options
 
 -- For creating a Issue
 
@@ -380,6 +432,8 @@ data LinkType = LinkType
 
 instance FromJSON LinkType where parseJSON = genericParseJSON options
 
+instance ToJSON LinkType where toJSON = genericToJSON options
+
 data LinkedIssue = LinkedIssue
   { linkedIssue_id :: !Text,
     linkedIssue_key :: !Text,
@@ -388,6 +442,8 @@ data LinkedIssue = LinkedIssue
   deriving (Show, Generic)
 
 instance FromJSON LinkedIssue where parseJSON = genericParseJSON options
+
+instance ToJSON LinkedIssue where toJSON = genericToJSON options
 
 data IssueLink = IssueLink
   { issueLink_id :: !Text,
@@ -399,6 +455,8 @@ data IssueLink = IssueLink
 
 instance FromJSON IssueLink where parseJSON = genericParseJSON options
 
+instance ToJSON IssueLink where toJSON = genericToJSON options
+
 data SubTask = SubTask
   { subTask_id :: !Text,
     subTask_outwardIssue :: !LinkedIssue,
@@ -407,3 +465,5 @@ data SubTask = SubTask
   deriving (Show, Generic)
 
 instance FromJSON SubTask where parseJSON = genericParseJSON options
+
+instance ToJSON SubTask where toJSON = genericToJSON options

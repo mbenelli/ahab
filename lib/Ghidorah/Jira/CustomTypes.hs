@@ -29,6 +29,8 @@ data IssueObject = IssueObject
 
 instance FromJSON IssueObject where parseJSON = genericParseJSON options
 
+instance ToJSON IssueObject where toJSON = genericToJSON options
+
 data IssueBean = IssueBean
   { issue_changelog :: !(Maybe PageOfChangelogs),
     issue_editmeta :: !(Maybe Text), -- IssueUpdateMetadata
@@ -51,6 +53,9 @@ data IssueBean = IssueBean
 
 instance FromJSON IssueBean where
   parseJSON = genericParseJSON options
+
+instance ToJSON IssueBean where
+  toJSON = genericToJSON options
 
 data IssueCoreObject = IssueCoreObject
   { i_summary :: !Text,

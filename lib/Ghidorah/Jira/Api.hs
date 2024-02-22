@@ -43,6 +43,8 @@ data SearchResponse = SearchResponse
 
 instance FromJSON SearchResponse
 
+instance ToJSON SearchResponse
+
 newtype CreateIssueRequest = CreateIssueRequest
   { fields :: IssueCoreObject
   }
