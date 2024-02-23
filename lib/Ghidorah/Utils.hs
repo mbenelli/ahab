@@ -4,7 +4,12 @@
 module Ghidorah.Utils where
 
 import BasicPrelude
+import Data.Aeson (eitherDecode)
+import Data.Aeson.Text (encodeToLazyText)
+import qualified Data.ByteString.Lazy as BL
 import Data.HashMap.Strict as M (fromList, lookup, toList)
+import qualified Data.Text as T
+import qualified Data.Text.Lazy.IO as I
 import Ghidorah.Client (run)
 import Ghidorah.Config
 import Ghidorah.Jira.Api
@@ -14,6 +19,18 @@ import Servant.Client (ClientM)
 import System.IO (IOMode (WriteMode), openFile)
 import Text.Pretty.Simple
 import Text.Printf
+
+-- Save and load from file
+--
+
+fromFile :: Text -> IO (Either String [IssueBean])
+fromFile f = eitherDecode <$> BL.readFile (T.unpack f)
+
+toFile :: IssueBean -> Text -> IO ()
+toFile i f = I.writeFile (T.unpack f) (encodeToLazyText i)
+
+-- Fiels related information
+--
 
 allFields :: IO (Either Text (HashMap Text Text))
 allFields = do
@@ -73,6 +90,7 @@ defaultFields =
   ]
 
 -- Printers
+--
 
 withContinuation :: (Show b) => (Config -> ClientM a) -> (a -> b) -> IO ()
 withContinuation f k = do
