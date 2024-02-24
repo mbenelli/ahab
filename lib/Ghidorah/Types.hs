@@ -1,28 +1,28 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
 module Ghidorah.Types where
 
 import BasicPrelude hiding (id, isPrefixOf, lookup)
-import Data.HashMap.Strict (filterWithKey, fromList, lookup, (!))
-import Data.Text (isPrefixOf, splitOn, unpack)
-import Data.Time (UTCTime)
-import Data.Time.Format (parseTimeM)
-import Data.Time.Format.ISO8601
-import Data.Time.LocalTime (utc)
+import Data.HashMap.Strict (filterWithKey)
+import Data.Text (isPrefixOf, unpack)
+import Data.Time (ZonedTime)
+import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import GHC.Generics
 import Ghidorah.Jira.CustomTypes
-import Ghidorah.Jira.CustomTypes (IssueBean (..))
 import Ghidorah.Jira.Types
-  ( Component,
-    IssueTypeDetails (..),
+  ( IssueTypeDetails (..),
     Project (..),
     Resolution (..),
     Status (..),
     UserDetails (..),
     Version (..),
   )
+
+parseTime :: Text -> Maybe ZonedTime
+parseTime = parseTimeM False defaultTimeLocale "%Y-%m-%dT%H:%M:%S%Q%z" . unpack
 
 data IssueType = Task | Story | Bug | Epic | Other
   deriving (Show, Generic)
@@ -37,13 +37,13 @@ data Issue = Issue
     summary :: !Text,
     project :: !Text,
     status :: !Text,
-    created :: !(Maybe UTCTime),
+    created :: !ZonedTime,
     creator :: !Text,
     description :: !(Maybe Text),
     assignee :: !(Maybe Text),
     reporter :: !(Maybe Text),
     resolution :: !(Maybe Text),
-    resolutiondate :: !(Maybe UTCTime),
+    resolutiondate :: !(Maybe ZonedTime),
     fixversion :: !(Maybe [Text]),
     versions :: !(Maybe [Text]),
     components :: !(Maybe [Text])
@@ -59,9 +59,9 @@ toIssue x = do
       _projectName = project_name _project
       _status = issueObject_status obj
       _statusName = status_name _status
-      _created = iso8601ParseM $ unpack $ issueObject_created obj
       _creator = issueObject_creator obj
   _issueTypeName <- itd_name _issueType
+  _created <- parseTime $ issueObject_created obj
   _creatorName <- user_name _creator
   return
     Issue
@@ -85,7 +85,7 @@ toIssue x = do
           return $ resolution_name r,
         resolutiondate = do
           t <- issueObject_resolutiondate obj
-          iso8601ParseM $ unpack t,
+          parseTime t,
         fixversion = do
           v <- issueObject_fixVersions obj
           return $ map version_name v,
