@@ -14,7 +14,7 @@ data IssueObject = IssueObject
     issueObject_status :: !Status,
     issueObject_created :: !Text,
     issueObject_creator :: !UserDetails,
-    issueObject_priority :: !Priority,
+    issueObject_priority :: !(Maybe Priority),
     issueObject_description :: !(Maybe Text),
     issueObject_assignee :: !(Maybe UserDetails),
     issueObject_reporter :: !(Maybe UserDetails),
