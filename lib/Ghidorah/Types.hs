@@ -16,7 +16,7 @@ import Ghidorah.Jira.Types as JT
   ( ChangeDetails (..),
     Changelog (..),
     IssueTypeDetails (..),
-    PageOfChangelogs (pog_histories),
+    PageOfChangelogs (..),
     Project (..),
     Resolution (..),
     Status (..),
@@ -34,68 +34,68 @@ data Status = New | ToDo | InProgress | Closed | Blocked
   deriving (Show, Generic)
 
 data Issue = Issue
-  { id :: !Text,
-    key :: !Text,
-    issuetype :: !IssueType,
-    summary :: !Text,
-    project :: !Text,
-    status :: !Text,
-    created :: !ZonedTime,
-    creator :: !Text,
-    description :: !(Maybe Text),
-    assignee :: !(Maybe Text),
-    reporter :: !(Maybe Text),
-    resolution :: !(Maybe Text),
-    resolutiondate :: !(Maybe ZonedTime),
-    fixversion :: !(Maybe [Text]),
-    versions :: !(Maybe [Text]),
-    components :: !(Maybe [Text])
+  { issue_id :: !Text,
+    issue_key :: !Text,
+    issue_issuetype :: !IssueType,
+    issue_summary :: !Text,
+    issue_project :: !Text,
+    issue_status :: !Text,
+    issue_created :: !ZonedTime,
+    issue_creator :: !Text,
+    issue_description :: !(Maybe Text),
+    issue_assignee :: !(Maybe Text),
+    issue_reporter :: !(Maybe Text),
+    issue_resolution :: !(Maybe Text),
+    issue_resolutiondate :: !(Maybe ZonedTime),
+    issue_fixversion :: !(Maybe [Text]),
+    issue_versions :: !(Maybe [Text]),
+    issue_components :: !(Maybe [Text])
   }
   deriving (Show, Generic)
 
 toIssue :: IssueBean -> Maybe Issue
 toIssue x = do
-  obj <- issue_fields x
-  let _issueType = issueObject_issuetype obj
-      _summary = issueObject_summary obj
-      _project = issueObject_project obj
-      _projectName = project_name _project
-      _status = issueObject_status obj
-      _statusName = status_name _status
-      _creator = issueObject_creator obj
-  _issueTypeName <- itd_name _issueType
-  _created <- parseTime $ issueObject_created obj
-  _creatorName <- user_name _creator
+  obj <- issueBean_fields x
+  let itype = issueObject_issuetype obj
+      summary = issueObject_summary obj
+      project = issueObject_project obj
+      projectName = project_name project
+      status = issueObject_status obj
+      statusName = status_name status
+      creator = issueObject_creator obj
+  typename <- issueTypeDetails_name itype
+  created <- parseTime $ issueObject_created obj
+  creatorName <- userDetails_name creator
   return
     Issue
-      { id = issue_id x,
-        key = issue_key x,
-        issuetype = issueType _issueTypeName,
-        summary = _summary,
-        project = _projectName,
-        status = _statusName,
-        created = _created,
-        creator = _creatorName,
-        description = issueObject_description obj,
-        assignee = do
+      { issue_id = issueBean_id x,
+        issue_key = issueBean_key x,
+        issue_issuetype = issueType typename,
+        issue_summary = summary,
+        issue_project = projectName,
+        issue_status = statusName,
+        issue_created = created,
+        issue_creator = creatorName,
+        issue_description = issueObject_description obj,
+        issue_assignee = do
           _assignee <- issueObject_assignee obj
-          user_name _assignee,
-        reporter = do
+          userDetails_name _assignee,
+        issue_reporter = do
           _reporter <- issueObject_reporter obj
-          user_name _reporter,
-        resolution = do
+          userDetails_name _reporter,
+        issue_resolution = do
           r <- issueObject_resolution obj
           return $ resolution_name r,
-        resolutiondate = do
+        issue_resolutiondate = do
           t <- issueObject_resolutiondate obj
           parseTime t,
-        fixversion = do
+        issue_fixversion = do
           v <- issueObject_fixVersions obj
           return $ map version_name v,
-        versions = do
+        issue_versions = do
           v <- issueObject_versions obj
           return $ map version_name v,
-        components = Nothing
+        issue_components = Nothing
       }
 
 data Change = Change
@@ -117,13 +117,13 @@ getChanges b = do
 
 getChangelog :: IssueBean -> Maybe [Changelog]
 getChangelog b = do
-  pog <- issue_changelog b
-  pog_histories pog
+  pog <- issueBean_changelog b
+  pageOfChangelogs_histories pog
 
 toChanges :: Changelog -> Maybe [Change]
 toChanges c = do
   author <- changelog_author c
-  user <- user_key author
+  user <- userDetails_key author
   items <- changelog_items c
   timestamp <- parseTime $ changelog_created c
   return
@@ -132,12 +132,12 @@ toChanges c = do
           Change
             { change_timestamp = timestamp,
               change_author = user,
-              change_field = fromMaybe "" $ field d,
-              change_type = fromMaybe "" $ fieldtype d,
-              change_from = fromMaybe "" $ JT.from d,
-              change_fromString = fromMaybe "" $ JT.fromString d,
-              change_to = fromMaybe "" $ JT.to d,
-              change_toString = fromMaybe "" $ JT.toString d
+              change_field = fromMaybe "" $ changeDetails_field d,
+              change_type = fromMaybe "" $ changeDetails_fieldtype d,
+              change_from = fromMaybe "" $ changeDetails_from d,
+              change_fromString = fromMaybe "" $ changeDetails_fromString d,
+              change_to = fromMaybe "" $ changeDetails_to d,
+              change_toString = fromMaybe "" $ changeDetails_toString d
             }
       )
       items

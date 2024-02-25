@@ -32,22 +32,12 @@ instance FromJSON IssueObject where parseJSON = genericParseJSON options
 instance ToJSON IssueObject where toJSON = genericToJSON options
 
 data IssueBean = IssueBean
-  { issue_changelog :: !(Maybe PageOfChangelogs),
-    issue_editmeta :: !(Maybe Text), -- IssueUpdateMetadata
-    issue_expand :: !(Maybe Text),
-    issue_fields :: !(Maybe IssueObject),
-    issue_fieldsToInclude :: !(Maybe IncludedFields),
-    --
-    issue_id :: !Text,
-    issue_key :: !Text
-    -- , issue_names :: !(Maybe Object)
-    -- , issue_operation :: !Text -- Operations
-    -- , issue_properties :: !(Maybe Object)
-    -- , issue_renderedFields :: !(Maybe Object)
-    -- , issue_schema :: !(Maybe Object)
-    -- , issue_self :: !Text
-    -- , issue_transitions :: !Text -- [IssueTransition]
-    -- , issue_versionedRepresentation :: !(Maybe Object)
+  { issueBean_changelog :: !(Maybe PageOfChangelogs),
+    issueBean_expand :: !(Maybe Text),
+    issueBean_fields :: !(Maybe IssueObject),
+    issueBean_fieldsToInclude :: !(Maybe IncludedFields),
+    issueBean_id :: !Text,
+    issueBean_key :: !Text
   }
   deriving (Show, Generic)
 
@@ -58,10 +48,10 @@ instance ToJSON IssueBean where
   toJSON = genericToJSON options
 
 data IssueCoreObject = IssueCoreObject
-  { i_summary :: !Text,
-    i_description :: !(Maybe Text),
-    i_issuetype :: !IssueType,
-    i_project :: !Project
+  { issueCoreObject_summary :: !Text,
+    issueCoreObject_description :: !(Maybe Text),
+    issueCoreObject_issuetype :: !IssueType,
+    issueCoreObject_project :: !Project
   }
   deriving (Show, Generic)
 
