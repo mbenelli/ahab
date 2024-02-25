@@ -4,7 +4,7 @@
 module Ghidorah.Utils where
 
 import BasicPrelude
-import Data.Aeson (eitherDecode)
+import Data.Aeson (eitherDecode, FromJSON, ToJSON)
 import Data.Aeson.Text (encodeToLazyText)
 import qualified Data.ByteString.Lazy as BL
 import Data.HashMap.Strict as M (fromList, lookup, toList)
@@ -23,10 +23,10 @@ import Text.Printf
 -- Save and load from file
 --
 
-fromFile :: Text -> IO (Either String [IssueBean])
+fromFile :: FromJSON a => Text -> IO (Either String a)
 fromFile f = eitherDecode <$> BL.readFile (T.unpack f)
 
-toFile :: IssueBean -> Text -> IO ()
+toFile :: ToJSON a => a -> Text -> IO ()
 toFile i f = I.writeFile (T.unpack f) (encodeToLazyText i)
 
 -- Fiels related information
