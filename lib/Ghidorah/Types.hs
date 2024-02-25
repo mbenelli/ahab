@@ -12,8 +12,11 @@ import Data.Time (ZonedTime)
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import GHC.Generics
 import Ghidorah.Jira.CustomTypes
-import Ghidorah.Jira.Types
-  ( IssueTypeDetails (..),
+import Ghidorah.Jira.Types as JT
+  ( ChangeDetails (..),
+    Changelog (..),
+    IssueTypeDetails (..),
+    PageOfChangelogs (pog_histories),
     Project (..),
     Resolution (..),
     Status (..),
@@ -94,6 +97,50 @@ toIssue x = do
           return $ map version_name v,
         components = Nothing
       }
+
+data Change = Change
+  { change_timestamp :: !ZonedTime,
+    change_author :: !Text,
+    change_field :: !Text,
+    change_type :: !Text,
+    change_from :: !Text,
+    change_fromString :: !Text,
+    change_to :: !Text,
+    change_toString :: !Text
+  }
+  deriving (Show, Generic)
+
+getChanges :: IssueBean -> Maybe [Change]
+getChanges b = do
+  cs <- getChangelog b
+  return $ concat $ mapMaybe toChanges cs
+
+getChangelog :: IssueBean -> Maybe [Changelog]
+getChangelog b = do
+  pog <- issue_changelog b
+  pog_histories pog
+
+toChanges :: Changelog -> Maybe [Change]
+toChanges c = do
+  author <- changelog_author c
+  user <- user_key author
+  items <- changelog_items c
+  timestamp <- parseTime $ changelog_created c
+  return
+    $ map
+      ( \d ->
+          Change
+            { change_timestamp = timestamp,
+              change_author = user,
+              change_field = fromMaybe "" $ field d,
+              change_type = fromMaybe "" $ fieldtype d,
+              change_from = fromMaybe "" $ JT.from d,
+              change_fromString = fromMaybe "" $ JT.fromString d,
+              change_to = fromMaybe "" $ JT.to d,
+              change_toString = fromMaybe "" $ JT.toString d
+            }
+      )
+      items
 
 issueType :: Text -> IssueType
 issueType x = case x of
