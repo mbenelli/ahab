@@ -1,14 +1,14 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Ghidorah.Client where
+module Ahab.Client where
 
 import Data.Default (Default (def))
 import Data.Text as T
-import Ghidorah.Config
-import Ghidorah.Jira.Api
-import Ghidorah.Jira.CustomTypes
-import Ghidorah.Jira.Types
+import Ahab.Config
+import Ahab.Jira.Api
+import Ahab.Jira.CustomTypes
+import Ahab.Jira.Types
 import Network.Connection (TLSSettings (TLSSettings))
 import Network.HTTP.Client (Manager, newManager)
 import Network.HTTP.Client.TLS (mkManagerSettings, newTlsManager)

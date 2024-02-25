@@ -1,5 +1,5 @@
 cabal-version:      3.0
-name:               ghidorah
+name:               ahab
 version:            0.1.0.0
 -- synopsis:
 -- description:
@@ -18,14 +18,14 @@ common warnings
 library
     import:           warnings
     exposed-modules:
-        Ghidorah.Client
-      , Ghidorah.Config
-      , Ghidorah.Server
-      , Ghidorah.Jira.Api
-      , Ghidorah.Jira.CustomTypes
-      , Ghidorah.Jira.Types
-      , Ghidorah.Types
-      , Ghidorah.Utils
+        Ahab.Client
+      , Ahab.Config
+      , Ahab.Server
+      , Ahab.Jira.Api
+      , Ahab.Jira.CustomTypes
+      , Ahab.Jira.Types
+      , Ahab.Types
+      , Ahab.Utils
     -- other-modules:
     -- other-extensions:
     build-depends:
@@ -63,7 +63,7 @@ test-suite ghidorah-test
     build-depends:
         base ^>=4.17.2.1
       , aeson >= 2.2.1 && < 2.3
+      , ahab
       , bytestring >= 0.11.5 && < 0.12
-      , ghidorah
       , HUnit
       , text >= 2.0.2 && < 2.1

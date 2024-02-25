@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Ghidorah.Types where
+module Ahab.Types where
 
 import BasicPrelude hiding (id, isPrefixOf, lookup)
 import Data.HashMap.Strict (filterWithKey)
@@ -11,8 +11,8 @@ import Data.Text (isPrefixOf, unpack)
 import Data.Time (ZonedTime)
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import GHC.Generics
-import Ghidorah.Jira.CustomTypes
-import Ghidorah.Jira.Types as JT
+import Ahab.Jira.CustomTypes
+import Ahab.Jira.Types as JT
   ( ChangeDetails (..),
     Changelog (..),
     IssueTypeDetails (..),

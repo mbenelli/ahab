@@ -1,11 +1,11 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Ghidorah.Jira.CustomTypes where
+module Ahab.Jira.CustomTypes where
 
 import Data.Aeson
 import Data.Text
 import GHC.Generics
-import Ghidorah.Jira.Types
+import Ahab.Jira.Types
 
 data IssueObject = IssueObject
   { issueObject_project :: !Project,

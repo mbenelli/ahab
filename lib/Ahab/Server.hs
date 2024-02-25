@@ -2,13 +2,13 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Ghidorah.Server where
+module Ahab.Server where
 
 import Data.Aeson
 import Data.Text
 import GHC.Generics
-import Ghidorah.Jira.CustomTypes (IssueBean)
-import Ghidorah.Jira.Types (Changelog, UserDetails)
+import Ahab.Jira.CustomTypes (IssueBean)
+import Ahab.Jira.Types (Changelog, UserDetails)
 import Network.Wai.Handler.Warp
 import Servant
 

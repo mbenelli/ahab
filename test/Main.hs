@@ -6,8 +6,8 @@ import Control.Applicative
 import Data.Aeson (FromJSON, eitherDecode)
 import Data.ByteString.Lazy as B
 import Data.Text
-import Ghidorah.Config
-import Ghidorah.Jira.CustomTypes as JT
+import Ahab.Config
+import Ahab.Jira.CustomTypes as JT
 import Test.HUnit
 
 sampleConfig :: Config

@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Ghidorah.Jira.Types where
+module Ahab.Jira.Types where
 
 import BasicPrelude
 import Data.Aeson

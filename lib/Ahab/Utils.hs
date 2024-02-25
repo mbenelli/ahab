@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Ghidorah.Utils where
+module Ahab.Utils where
 
 import BasicPrelude
 import Data.Aeson (eitherDecode, FromJSON, ToJSON)
@@ -10,11 +10,11 @@ import qualified Data.ByteString.Lazy as BL
 import Data.HashMap.Strict as M (fromList, lookup, toList)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy.IO as I
-import Ghidorah.Client (run)
-import Ghidorah.Config
-import Ghidorah.Jira.Api
-import Ghidorah.Jira.CustomTypes
-import Ghidorah.Jira.Types
+import Ahab.Client (run)
+import Ahab.Config
+import Ahab.Jira.Api
+import Ahab.Jira.CustomTypes
+import Ahab.Jira.Types
 import Servant.Client (ClientM)
 import System.IO (IOMode (WriteMode), openFile)
 import Text.Pretty.Simple

@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Ghidorah.Jira.Api where
+module Ahab.Jira.Api where
 
 import BasicPrelude
 import Data.Aeson
@@ -11,11 +11,9 @@ import Data.List as L
 import Data.Proxy (Proxy (..))
 import Data.Text as T
 import GHC.Generics
-import Ghidorah.Config
--- Types
-
-import Ghidorah.Jira.CustomTypes (IssueBean, IssueCoreObject)
-import Ghidorah.Jira.Types
+import Ahab.Config
+import Ahab.Jira.CustomTypes (IssueBean, IssueCoreObject)
+import Ahab.Jira.Types
 import Servant.API
   ( Capture,
     Get,
