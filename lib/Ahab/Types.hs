@@ -5,14 +5,8 @@
 
 module Ahab.Types where
 
-import BasicPrelude hiding (id, isPrefixOf, lookup)
-import Data.HashMap.Strict (filterWithKey)
-import Data.Text (isPrefixOf, unpack)
-import Data.Time (ZonedTime)
-import Data.Time.Format (defaultTimeLocale, parseTimeM)
-import GHC.Generics
 import Ahab.Jira.CustomTypes
-import Ahab.Jira.Types as JT
+import qualified Ahab.Jira.Types as JT
   ( ChangeDetails (..),
     Changelog (..),
     IssueTypeDetails (..),
@@ -23,83 +17,130 @@ import Ahab.Jira.Types as JT
     UserDetails (..),
     Version (..),
   )
+import BasicPrelude hiding (id, isPrefixOf, lookup)
+import Data.HashMap.Strict (filterWithKey)
+import Data.Text (isPrefixOf, unpack)
+import Data.Time (UTCTime, zonedTimeToUTC)
+import Data.Time.Format (defaultTimeLocale, parseTimeM)
+import GHC.Generics
 
-parseTime :: Text -> Maybe ZonedTime
-parseTime = parseTimeM False defaultTimeLocale "%Y-%m-%dT%H:%M:%S%Q%z" . unpack
+parseTime :: Text -> Maybe UTCTime
+parseTime s = do
+  t <- parseTimeM False defaultTimeLocale "%Y-%m-%dT%H:%M:%S%Q%z" $ unpack s
+  return $ zonedTimeToUTC t
 
 data IssueType = Task | Story | Bug | Epic | Other
-  deriving (Show, Generic)
+  deriving (Eq, Show, Generic)
 
-data Status = New | ToDo | InProgress | Closed | Blocked
-  deriving (Show, Generic)
+newtype User = User Text
+  deriving (Ord, Eq, Show, Generic)
 
-data Issue = Issue
+newtype Status = Status Text
+  deriving (Eq, Show, Generic)
+
+class Issue a where
+  key :: a -> Text
+  issuetype :: a -> IssueType
+  summary :: a -> Text
+  project :: a -> Text
+  status :: a -> Status
+  created :: a -> UTCTime
+  creator :: a -> User
+  description :: a -> Maybe Text
+  assignee :: a -> Maybe User
+  reporter :: a -> Maybe User
+  resolution :: a -> Maybe Text
+  resolutiondate :: a -> Maybe UTCTime
+  fixversion :: a -> Maybe [Text]
+  versions :: a -> Maybe [Text]
+  components :: a -> Maybe [Text]
+
+data CoreIssue = CoreIssue
   { issue_id :: !Text,
     issue_key :: !Text,
     issue_issuetype :: !IssueType,
     issue_summary :: !Text,
     issue_project :: !Text,
-    issue_status :: !Text,
-    issue_created :: !ZonedTime,
-    issue_creator :: !Text,
+    issue_status :: !Status,
+    issue_created :: !UTCTime,
+    issue_creator :: !User,
     issue_description :: !(Maybe Text),
-    issue_assignee :: !(Maybe Text),
-    issue_reporter :: !(Maybe Text),
+    issue_assignee :: !(Maybe User),
+    issue_reporter :: !(Maybe User),
     issue_resolution :: !(Maybe Text),
-    issue_resolutiondate :: !(Maybe ZonedTime),
+    issue_resolutiondate :: !(Maybe UTCTime),
     issue_fixversion :: !(Maybe [Text]),
     issue_versions :: !(Maybe [Text]),
     issue_components :: !(Maybe [Text])
   }
   deriving (Show, Generic)
 
-toIssue :: IssueBean -> Maybe Issue
+instance Issue CoreIssue where
+  key = issue_key
+  issuetype = issue_issuetype
+  summary = issue_summary
+  project = issue_project
+  status = issue_status
+  created = issue_created
+  creator = issue_creator
+  description = issue_description
+  assignee = issue_assignee
+  reporter = issue_reporter
+  resolution = issue_resolution
+  resolutiondate = issue_resolutiondate
+  fixversion = issue_fixversion
+  versions = issue_versions
+  components = issue_components
+
+toIssue :: IssueBean -> Maybe CoreIssue
 toIssue x = do
   obj <- issueBean_fields x
   let itype = issueObject_issuetype obj
-      summary = issueObject_summary obj
-      project = issueObject_project obj
-      projectName = project_name project
-      status = issueObject_status obj
-      statusName = status_name status
-      creator = issueObject_creator obj
-  typename <- issueTypeDetails_name itype
-  created <- parseTime $ issueObject_created obj
-  creatorName <- userDetails_name creator
+      _summary = issueObject_summary obj
+      _project = issueObject_project obj
+      _projectName = JT.project_name _project
+      _status = issueObject_status obj
+      _statusName = JT.status_name _status
+      _creator = issueObject_creator obj
+  typename <- JT.issueTypeDetails_name itype
+  _created <- parseTime $ issueObject_created obj
+  creatorName <- JT.userDetails_name _creator
   return
-    Issue
+    CoreIssue
       { issue_id = issueBean_id x,
         issue_key = issueBean_key x,
         issue_issuetype = issueType typename,
-        issue_summary = summary,
-        issue_project = projectName,
-        issue_status = statusName,
-        issue_created = created,
-        issue_creator = creatorName,
+        issue_summary = _summary,
+        issue_project = _projectName,
+        issue_status = Status _statusName,
+        issue_created = _created,
+        issue_creator = User creatorName,
         issue_description = issueObject_description obj,
         issue_assignee = do
           _assignee <- issueObject_assignee obj
-          userDetails_name _assignee,
+          _name <- JT.userDetails_name _assignee
+          return $ User _name,
         issue_reporter = do
           _reporter <- issueObject_reporter obj
-          userDetails_name _reporter,
+          _name <- JT.userDetails_name _reporter
+          return $ User _name,
         issue_resolution = do
           r <- issueObject_resolution obj
-          return $ resolution_name r,
+          return $ JT.resolution_name r,
         issue_resolutiondate = do
           t <- issueObject_resolutiondate obj
           parseTime t,
         issue_fixversion = do
           v <- issueObject_fixVersions obj
-          return $ map version_name v,
+          return $ map JT.version_name v,
         issue_versions = do
           v <- issueObject_versions obj
-          return $ map version_name v,
+          return $ map JT.version_name v,
         issue_components = Nothing
       }
 
 data Change = Change
-  { change_timestamp :: !ZonedTime,
+  { change_timestamp :: !UTCTime,
     change_author :: !Text,
     change_field :: !Text,
     change_type :: !Text,
@@ -115,29 +156,29 @@ getChanges b = do
   cs <- getChangelog b
   return $ concat $ mapMaybe toChanges cs
 
-getChangelog :: IssueBean -> Maybe [Changelog]
+getChangelog :: IssueBean -> Maybe [JT.Changelog]
 getChangelog b = do
   pog <- issueBean_changelog b
-  pageOfChangelogs_histories pog
+  JT.pageOfChangelogs_histories pog
 
-toChanges :: Changelog -> Maybe [Change]
+toChanges :: JT.Changelog -> Maybe [Change]
 toChanges c = do
-  author <- changelog_author c
-  user <- userDetails_key author
-  items <- changelog_items c
-  timestamp <- parseTime $ changelog_created c
+  author <- JT.changelog_author c
+  user <- JT.userDetails_key author
+  items <- JT.changelog_items c
+  timestamp <- parseTime $ JT.changelog_created c
   return
     $ map
       ( \d ->
           Change
             { change_timestamp = timestamp,
               change_author = user,
-              change_field = fromMaybe "" $ changeDetails_field d,
-              change_type = fromMaybe "" $ changeDetails_fieldtype d,
-              change_from = fromMaybe "" $ changeDetails_from d,
-              change_fromString = fromMaybe "" $ changeDetails_fromString d,
-              change_to = fromMaybe "" $ changeDetails_to d,
-              change_toString = fromMaybe "" $ changeDetails_toString d
+              change_field = fromMaybe "" $ JT.changeDetails_field d,
+              change_type = fromMaybe "" $ JT.changeDetails_fieldtype d,
+              change_from = fromMaybe "" $ JT.changeDetails_from d,
+              change_fromString = fromMaybe "" $ JT.changeDetails_fromString d,
+              change_to = fromMaybe "" $ JT.changeDetails_to d,
+              change_toString = fromMaybe "" $ JT.changeDetails_toString d
             }
       )
       items
