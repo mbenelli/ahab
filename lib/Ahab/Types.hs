@@ -146,7 +146,7 @@ toIssue x = do
 
 data Change = Change
   { change_timestamp :: !UTCTime,
-    change_author :: !Text,
+    change_author :: !User,
     change_field :: !Text,
     change_type :: !Text,
     change_from :: !Text,
@@ -169,7 +169,6 @@ getChangelog b = do
 toChanges :: JT.Changelog -> Maybe [Change]
 toChanges c = do
   author <- JT.changelog_author c
-  user <- JT.userDetails_self author
   items <- JT.changelog_items c
   timestamp <- parseTime $ JT.changelog_created c
   return
@@ -177,7 +176,7 @@ toChanges c = do
       ( \d ->
           Change
             { change_timestamp = timestamp,
-              change_author = user,
+              change_author = pseudonomizeUser author,
               change_field = fromMaybe "" $ JT.changeDetails_field d,
               change_type = fromMaybe "" $ JT.changeDetails_fieldtype d,
               change_from = fromMaybe "" $ JT.changeDetails_from d,
