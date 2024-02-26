@@ -1,0 +1,541 @@
+[
+  {
+    "changelog": {
+      "histories": [
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "John Doe",
+            "emailAddress": "john@doe.net",
+            "key": "johnd",
+            "name": "johnd",
+            "self": "https://john.doe.net/rest/api/2/user?username=johnd",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-01-29T09:04:34.533+0000",
+          "historyMetadata": null,
+          "id": "109669340",
+          "items": [
+            {
+              "field": "summary",
+              "fieldId": null,
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": "Explore ways te measure resources.",
+              "to": null,
+              "toString": "Explore ways to measure resources."
+            }
+          ]
+        },
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "John Doe",
+            "emailAddress": "john@doe.net",
+            "key": "johnd",
+            "name": "johnd",
+            "self": "https://john.doe.net/rest/api/2/user?username=johnd",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-01-29T09:04:59.866+0000",
+          "historyMetadata": null,
+          "id": "109669354",
+          "items": [
+            {
+              "field": "status",
+              "fieldId": null,
+              "fieldtype": "jira",
+              "from": "1",
+              "fromString": "To Do",
+              "to": "11806",
+              "toString": "New (Kanban)"
+            }
+          ]
+        },
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "John Doe",
+            "emailAddress": "john@doe.net",
+            "key": "johnd",
+            "name": "johnd",
+            "self": "https://john.doe.net/rest/api/2/user?username=johnd",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-01-29T09:08:06.018+0000",
+          "historyMetadata": null,
+          "id": "109669398",
+          "items": [
+            {
+              "field": "labels",
+              "fieldId": null,
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": "",
+              "to": null,
+              "toString": "TeamDoe"
+            }
+          ]
+        },
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "Jake Doe",
+            "emailAddress": "jake@doe.net",
+            "key": "jaked",
+            "name": "jaked",
+            "self": "https://john.doe.net/rest/api/2/user?username=jaked",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-01-30T08:46:38.765+0000",
+          "historyMetadata": null,
+          "id": "109809454",
+          "items": [
+            {
+              "field": "Rank",
+              "fieldId": null,
+              "fieldtype": "custom",
+              "from": "",
+              "fromString": "",
+              "to": "",
+              "toString": "Ranked higher"
+            }
+          ]
+        },
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "Jake Doe",
+            "emailAddress": "jake@doe.net",
+            "key": "jaked",
+            "name": "jaked",
+            "self": "https://john.doe.net/rest/api/2/user?username=jaked",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-01-30T08:46:41.194+0000",
+          "historyMetadata": null,
+          "id": "109809456",
+          "items": [
+            {
+              "field": "Rank",
+              "fieldId": null,
+              "fieldtype": "custom",
+              "from": "",
+              "fromString": "",
+              "to": "",
+              "toString": "Ranked higher"
+            }
+          ]
+        },
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "Jake Doe",
+            "emailAddress": "jake@doe.net",
+            "key": "jaked",
+            "name": "jaked",
+            "self": "https://john.doe.net/rest/api/2/user?username=jaked",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-01-30T08:46:44.160+0000",
+          "historyMetadata": null,
+          "id": "109809460",
+          "items": [
+            {
+              "field": "Rank",
+              "fieldId": null,
+              "fieldtype": "custom",
+              "from": "",
+              "fromString": "",
+              "to": "",
+              "toString": "Ranked higher"
+            }
+          ]
+        },
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "Jake Doe",
+            "emailAddress": "jake@doe.net",
+            "key": "jaked",
+            "name": "jaked",
+            "self": "https://john.doe.net/rest/api/2/user?username=jaked",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-01-30T08:46:47.685+0000",
+          "historyMetadata": null,
+          "id": "109809462",
+          "items": [
+            {
+              "field": "Rank",
+              "fieldId": null,
+              "fieldtype": "custom",
+              "from": "",
+              "fromString": "",
+              "to": "",
+              "toString": "Ranked higher"
+            }
+          ]
+        },
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "Jake Doe",
+            "emailAddress": "jake@doe.net",
+            "key": "jaked",
+            "name": "jaked",
+            "self": "https://john.doe.net/rest/api/2/user?username=jaked",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-02-01T22:22:22.326+0000",
+          "historyMetadata": null,
+          "id": "110304754",
+          "items": [
+            {
+              "field": "Epic Link",
+              "fieldId": null,
+              "fieldtype": "custom",
+              "from": null,
+              "fromString": null,
+              "to": "12366364",
+              "toString": "PUBLIC-30836"
+            }
+          ]
+        },
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "Jake Doe",
+            "emailAddress": "jake@doe.net",
+            "key": "jaked",
+            "name": "jaked",
+            "self": "https://john.doe.net/rest/api/2/user?username=jaked",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-02-01T22:23:48.835+0000",
+          "historyMetadata": null,
+          "id": "110304761",
+          "items": [
+            {
+              "field": "summary",
+              "fieldId": null,
+              "fieldtype": "jira",
+              "from": null,
+              "fromString": "Explore ways to measure resources.",
+              "to": null,
+              "toString": "Metric<Definition> : Explore ways to measure resources."
+            }
+          ]
+        },
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "John Doe",
+            "emailAddress": "john@doe.net",
+            "key": "johnd",
+            "name": "johnd",
+            "self": "https://john.doe.net/rest/api/2/user?username=johnd",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-02-19T07:45:20.069+0000",
+          "historyMetadata": null,
+          "id": "111591100",
+          "items": [
+            {
+              "field": "status",
+              "fieldId": null,
+              "fieldtype": "jira",
+              "from": "11806",
+              "fromString": "New (Kanban)",
+              "to": "1",
+              "toString": "To Do"
+            }
+          ]
+        },
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "Jane Doe",
+            "emailAddress": "jane@doe.net",
+            "key": "janed",
+            "name": "janed",
+            "self": "https://john.doe.net/rest/api/2/user?username=janed",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-02-19T09:07:02.766+0000",
+          "historyMetadata": null,
+          "id": "111605093",
+          "items": [
+            {
+              "field": "Acceptance Criteria",
+              "fieldId": null,
+              "fieldtype": "custom",
+              "from": null,
+              "fromString": null,
+              "to": null,
+              "toString": "."
+            }
+          ]
+        },
+        {
+          "author": {
+            "accountId": null,
+            "accountType": null,
+            "active": true,
+            "avatarUrls": {
+              "avatar16x16": null,
+              "avatar24x24": null,
+              "avatar32x32": null,
+              "avatar48x48": null
+            },
+            "displayName": "Jane Doe",
+            "emailAddress": "jane@doe.net",
+            "key": "janed",
+            "name": "janed",
+            "self": "https://john.doe.net/rest/api/2/user?username=janed",
+            "timeZone": "Europe/Berlin"
+          },
+          "created": "2024-02-19T09:07:06.330+0000",
+          "historyMetadata": null,
+          "id": "111605095",
+          "items": [
+            {
+              "field": "status",
+              "fieldId": null,
+              "fieldtype": "jira",
+              "from": "1",
+              "fromString": "To Do",
+              "to": "3",
+              "toString": "In Progress"
+            }
+          ]
+        }
+      ],
+      "maxResults": 12,
+      "startAt": 0,
+      "total": 12
+    },
+    "fields": {
+      "assignee": {
+        "accountId": null,
+        "accountType": null,
+        "active": true,
+        "avatarUrls": {
+          "avatar16x16": null,
+          "avatar24x24": null,
+          "avatar32x32": null,
+          "avatar48x48": null
+        },
+        "displayName": "John Doe",
+        "emailAddress": "john@doe.net",
+        "key": "johnd",
+        "name": "johnd",
+        "self": "https://john.doe.net/rest/api/2/user?username=johnd",
+        "timeZone": "Europe/Berlin"
+      },
+      "components": [],
+      "created": "2024-01-26T09:47:41.000+0000",
+      "creator": {
+        "accountId": null,
+        "accountType": null,
+        "active": true,
+        "avatarUrls": {
+          "avatar16x16": null,
+          "avatar24x24": null,
+          "avatar32x32": null,
+          "avatar48x48": null
+        },
+        "displayName": "John Doe",
+        "emailAddress": "john@doe.net",
+        "key": "johnd",
+        "name": "johnd",
+        "self": "https://john.doe.net/rest/api/2/user?username=johnd",
+        "timeZone": "Europe/Berlin"
+      },
+      "customfield_10106": null,
+      "customfield_11904": null,
+      "customfield_13440": [
+        {
+          "disabled": false,
+          "id": "13731",
+          "self": "https://john.doe.net/rest/api/2/customFieldOption/13731",
+          "value": "CIVIC_i2"
+        },
+        {
+          "disabled": false,
+          "id": "13732",
+          "self": "https://john.doe.net/rest/api/2/customFieldOption/13732",
+          "value": "CIVIC_i3"
+        }
+      ],
+      "customfield_16126": [
+        "MSI VideoWall (SR-6891)"
+      ],
+      "description": "We need measure of resources for productivity-related dashboards at all levels",
+      "fixVersions": [],
+      "issuelink": null,
+      "issuetype": {
+        "avatarId": 10318,
+        "description": "A task that needs to be done.",
+        "entityId": null,
+        "hierarchyLevel": null,
+        "iconUrl": "https://john.doe.net/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype",
+        "id": "10002",
+        "name": "Task",
+        "self": "https://john.doe.net/rest/api/2/issuetype/10002",
+        "subtask": false
+      },
+      "priority": {
+        "iconUrl": "https://john.doe.net/images/icons/priorities/medium.svg",
+        "id": "3",
+        "name": "Medium",
+        "self": "https://john.doe.net/rest/api/2/priority/3"
+      },
+      "project": {
+        "avatarUrls": {
+          "avatar16x16": null,
+          "avatar24x24": null,
+          "avatar32x32": null,
+          "avatar48x48": null
+        },
+        "id": "10704",
+        "key": "OR",
+        "name": "Orochi",
+        "projectCategory": {
+          "description": null,
+          "id": "10100",
+          "name": "New Access Scheme",
+          "self": "https://john.doe.net/rest/api/2/projectCategory/10100"
+        },
+        "projectTypeKey": "software",
+        "self": "https://john.doe.net/rest/api/2/project/10704",
+        "simplified": null
+      },
+      "reporter": {
+        "accountId": null,
+        "accountType": null,
+        "active": true,
+        "avatarUrls": {
+          "avatar16x16": null,
+          "avatar24x24": null,
+          "avatar32x32": null,
+          "avatar48x48": null
+        },
+        "displayName": "John Doe",
+        "emailAddress": "john@doe.net",
+        "key": "johnd",
+        "name": "johnd",
+        "self": "https://john.doe.net/rest/api/2/user?username=johnd",
+        "timeZone": "Europe/Berlin"
+      },
+      "resolution": null,
+      "resolutiondate": null,
+      "status": {
+        "description": "",
+        "iconUrl": "https://john.doe.net/images/icons/statuses/inprogress.png",
+        "id": "3",
+        "name": "In Progress",
+        "self": "https://john.doe.net/rest/api/2/status/3",
+        "statusCategory": {
+          "id": 4,
+          "key": "indeterminate",
+          "name": "In Progress",
+          "self": "https://john.doe.net/rest/api/2/statuscategory/4"
+        }
+      },
+      "summary": "Metric<Definition> : Explore ways to measure resources.",
+      "versions": []
+    },
+    "id": "12748768",
+    "key": "OR-450718",
+    "versionedRepresentation": null
+  }
+]

@@ -12,8 +12,6 @@ issueBeanTest =
   [ TestLabel
       "IssueBean"
       ( TestCase $ do
-          --            let j = B.readFile "test/samples/issuebean.json"
-          --            i <- (eitherDecode <$> j) :: IO (Either String T.IssueBean)
           i :: Either String CT.IssueBean <- U.fromFile "test/samples/issuebean.json"
           case i of
             Left s -> assertFailure $ "Error: " ++ show s
@@ -22,8 +20,6 @@ issueBeanTest =
     TestLabel
       "Beans"
       ( TestCase $ do
-          --            let j = B.readFile "test/samples/issuebeans.json"
-          --            is <- (eitherDecode <$> j) :: IO (Either String [T.IssueBean])
           is :: Either String [CT.IssueBean] <- U.fromFile "test/samples/issuebeans.json"
           case is of
             Left s -> assertFailure $ "Error: " ++ show s

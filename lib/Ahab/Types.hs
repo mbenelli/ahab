@@ -18,6 +18,7 @@ import qualified Ahab.Jira.Types as JT
     Version (..),
   )
 import BasicPrelude hiding (id, isPrefixOf, lookup)
+import Codec.Rot13
 import Data.HashMap.Strict (filterWithKey)
 import Data.Text (isPrefixOf, unpack)
 import Data.Time (UTCTime, zonedTimeToUTC)
@@ -34,6 +35,13 @@ data IssueType = Task | Story | Bug | Epic | Other
 
 newtype User = User Text
   deriving (Ord, Eq, Show, Generic)
+
+pseudonomizeUser :: JT.UserDetails -> User
+pseudonomizeUser =
+  User
+    . rot13
+    . fromMaybe "anonymous"
+    . JT.userDetails_displayName
 
 newtype Status = Status Text
   deriving (Eq, Show, Generic)
@@ -104,7 +112,6 @@ toIssue x = do
       _creator = issueObject_creator obj
   typename <- JT.issueTypeDetails_name itype
   _created <- parseTime $ issueObject_created obj
-  creatorName <- JT.userDetails_self _creator
   return
     CoreIssue
       { issue_id = issueBean_id x,
@@ -114,16 +121,14 @@ toIssue x = do
         issue_project = _projectName,
         issue_status = Status _statusName,
         issue_created = _created,
-        issue_creator = User creatorName,
+        issue_creator = pseudonomizeUser _creator,
         issue_description = issueObject_description obj,
         issue_assignee = do
           _assignee <- issueObject_assignee obj
-          _name <- JT.userDetails_self _assignee
-          return $ User _name,
+          return $ pseudonomizeUser _assignee,
         issue_reporter = do
           _reporter <- issueObject_reporter obj
-          _name <- JT.userDetails_self _reporter
-          return $ User _name,
+          return $ pseudonomizeUser _reporter,
         issue_resolution = do
           r <- issueObject_resolution obj
           return $ JT.resolution_name r,
