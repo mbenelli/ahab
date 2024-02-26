@@ -24,6 +24,7 @@ library
       , Ahab.Jira.Api
       , Ahab.Jira.CustomTypes
       , Ahab.Jira.Types
+      , Ahab.Transform
       , Ahab.Types
       , Ahab.Utils
     -- other-modules:
@@ -34,6 +35,7 @@ library
       , basic-prelude >= 0.7.0 && < 0.8
       , bytestring >= 0.11.5 && < 0.12
       , connection >= 0.3.1 && < 0.4
+      , containers
       , data-default >= 0.7.1 && < 0.8
       , directory >= 1.3.7 && < 1.4
       , http-client >= 0.7.16 && < 0.8
