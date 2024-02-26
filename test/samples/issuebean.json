@@ -1,0 +1,110 @@
+{
+  "changelog": {
+    "histories": [],
+    "maxResults": 0,
+    "startAt": 0,
+    "total": 0
+  },
+  "expand": "operations,versionedRepresentations,editmeta,changelog,renderedFields",
+  "fields": {
+    "assignee": {
+      "accountId": "5bc8d58343c7db56600a1249",
+      "accountType": "atlassian",
+      "active": true,
+      "avatarUrls": {
+        "avatar16x16": null,
+        "avatar24x24": null,
+        "avatar32x32": null,
+        "avatar48x48": null
+      },
+      "displayName": "John Doe",
+      "emailAddress": "john@doe.net",
+      "key": null,
+      "name": null,
+      "self": "https://john.doe.net/rest/api/2/user?accountId=5bc8d58343c7db56600a1249",
+      "timeZone": "Europe/Berlin"
+    },
+    "components": [],
+    "created": "2024-02-15T23:06:36.557+0100",
+    "creator": {
+      "accountId": "5bc8d58343c7db56600a1249",
+      "accountType": "atlassian",
+      "active": true,
+      "avatarUrls": {
+        "avatar16x16": null,
+        "avatar24x24": null,
+        "avatar32x32": null,
+        "avatar48x48": null
+      },
+      "displayName": "John Doe",
+      "emailAddress": "john@doe.net",
+      "key": null,
+      "name": null,
+      "self": "https://john.doe.net/rest/api/2/user?accountId=5bc8d58343c7db56600a1249",
+      "timeZone": "Europe/Berlin"
+    },
+    "description": "This is a test",
+    "fixVersions": [],
+    "issuelink": null,
+    "issuetype": {
+      "avatarId": 10318,
+      "description": "A small, distinct piece of work.",
+      "entityId": "17b02149-ee32-443a-b3a6-073aafaca756",
+      "hierarchyLevel": 0,
+      "iconUrl": "https://john.doe.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+      "id": "10001",
+      "name": "Task",
+      "scope": null,
+      "self": "https://john.doe.net/rest/api/2/issuetype/10001",
+      "subtask": false
+    },
+    "priority": {
+      "iconUrl": "https://john.doe.net/images/icons/priorities/medium.svg",
+      "id": "3",
+      "name": "Medium",
+      "self": "https://john.doe.net/rest/api/2/priority/3"
+    },
+    "project": {
+      "id": "10000",
+      "key": "OR",
+      "name": "Orochi"
+    },
+    "reporter": {
+      "accountId": "5bc8d58343c7db56600a1249",
+      "accountType": "atlassian",
+      "active": true,
+      "avatarUrls": {
+        "avatar16x16": null,
+        "avatar24x24": null,
+        "avatar32x32": null,
+        "avatar48x48": null
+      },
+      "displayName": "John Doe",
+      "emailAddress": "john@doe.net",
+      "key": null,
+      "name": null,
+      "self": "https://john.doe.net/rest/api/2/user?accountId=5bc8d58343c7db56600a1249",
+      "timeZone": "Europe/Berlin"
+    },
+    "resolution": null,
+    "resolutiondate": null,
+    "status": {
+      "description": "",
+      "iconUrl": "https://john.doe.net/",
+      "id": "10000",
+      "name": "To Do",
+      "self": "https://john.doe.net/rest/api/2/status/10000",
+      "statusCategory": {
+        "id": 2,
+        "key": "new",
+        "name": "To Do",
+        "self": "https://john.doe.net/rest/api/2/statuscategory/2"
+      }
+    },
+    "summary": "Test 2",
+    "versions": []
+  },
+  "fieldsToInclude": null,
+  "id": "10002",
+  "key": "OR-3"
+}

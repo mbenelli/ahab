@@ -66,6 +66,7 @@ test-suite ahab-test
         base ^>=4.17.2.1
       , aeson >= 2.2.1 && < 2.3
       , ahab
+      , basic-prelude >= 0.7.0 && < 0.8
       , bytestring >= 0.11.5 && < 0.12
       , HUnit
       , text >= 2.0.2 && < 2.1
