@@ -161,3 +161,4 @@ optimisticLoadIssue f = do
   let ib :: IssueBean = head ibs
   let cs :: [Change] = fromJust $ getChanges ib
   return (ib, cs)
+
