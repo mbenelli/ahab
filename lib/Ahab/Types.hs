@@ -104,7 +104,7 @@ toIssue x = do
       _creator = issueObject_creator obj
   typename <- JT.issueTypeDetails_name itype
   _created <- parseTime $ issueObject_created obj
-  creatorName <- JT.userDetails_name _creator
+  creatorName <- JT.userDetails_self _creator
   return
     CoreIssue
       { issue_id = issueBean_id x,
@@ -118,11 +118,11 @@ toIssue x = do
         issue_description = issueObject_description obj,
         issue_assignee = do
           _assignee <- issueObject_assignee obj
-          _name <- JT.userDetails_name _assignee
+          _name <- JT.userDetails_self _assignee
           return $ User _name,
         issue_reporter = do
           _reporter <- issueObject_reporter obj
-          _name <- JT.userDetails_name _reporter
+          _name <- JT.userDetails_self _reporter
           return $ User _name,
         issue_resolution = do
           r <- issueObject_resolution obj
@@ -164,7 +164,7 @@ getChangelog b = do
 toChanges :: JT.Changelog -> Maybe [Change]
 toChanges c = do
   author <- JT.changelog_author c
-  user <- JT.userDetails_key author
+  user <- JT.userDetails_self author
   items <- JT.changelog_items c
   timestamp <- parseTime $ JT.changelog_created c
   return
