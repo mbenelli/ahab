@@ -5,15 +5,15 @@
 
 module Ahab.Jira.Api where
 
+import Ahab.Config
+import Ahab.Jira.CustomTypes (IssueBean, IssueCoreObject)
+import qualified Ahab.Jira.Types as JT
 import BasicPrelude
 import Data.Aeson
 import Data.List as L
 import Data.Proxy (Proxy (..))
 import Data.Text as T
 import GHC.Generics
-import Ahab.Config
-import Ahab.Jira.CustomTypes (IssueBean, IssueCoreObject)
-import Ahab.Jira.Types
 import Servant.API
   ( Capture,
     Get,
@@ -72,14 +72,14 @@ type API =
       :> "field"
       :> Header "X-AUSERNAME" Text
       :> Header "Authorization" Text
-      :> Get '[JSON] [FieldDetails]
+      :> Get '[JSON] [JT.FieldDetails]
     :<|> "rest"
       :> "api"
       :> "2"
       :> "issuetype"
       :> Header "X-AUSERNAME" Text
       :> Header "Authorization" Text
-      :> Get '[JSON] [IssueTypeDetails]
+      :> Get '[JSON] [JT.IssueTypeDetails]
     :<|> "rest"
       :> "api"
       :> "2"
@@ -104,7 +104,7 @@ type API =
       :> "changelog"
       :> Header "X-AUSERNAME" Text
       :> Header "Authorization" Text
-      :> Get '[JSON] PageBeanChangelog
+      :> Get '[JSON] JT.PageBeanChangelog
 
 api :: Proxy API
 api = Proxy
@@ -119,11 +119,11 @@ search ::
   Maybe Text ->
   Maybe Text ->
   ClientM SearchResponse
-getFields :: Maybe Text -> Maybe Text -> ClientM [FieldDetails]
-issueTypes :: Maybe Text -> Maybe Text -> ClientM [IssueTypeDetails]
+getFields :: Maybe Text -> Maybe Text -> ClientM [JT.FieldDetails]
+issueTypes :: Maybe Text -> Maybe Text -> ClientM [JT.IssueTypeDetails]
 createIssueReq :: CreateIssueRequest -> Maybe Text -> Maybe Text -> ClientM IssueBean
 issue :: Text -> Maybe Text -> Maybe Text -> ClientM IssueBean
-changelogs :: Text -> Maybe Text -> Maybe Text -> ClientM PageBeanChangelog
+changelogs :: Text -> Maybe Text -> Maybe Text -> ClientM JT.PageBeanChangelog
 search :<|> getFields :<|> issueTypes :<|> createIssueReq :<|> issue :<|> changelogs = client api
 
 query :: Text -> Text -> Config -> ClientM SearchResponse
@@ -150,13 +150,13 @@ searchQuery jql start fs cfg =
     (Just $ user cfg)
     (Just $ auth cfg)
 
-fieldsQuery :: Config -> ClientM [FieldDetails]
+fieldsQuery :: Config -> ClientM [JT.FieldDetails]
 fieldsQuery cfg =
   getFields
     (Just $ user cfg)
     (Just $ auth cfg)
 
-issueTypeQuery :: Config -> ClientM [IssueTypeDetails]
+issueTypeQuery :: Config -> ClientM [JT.IssueTypeDetails]
 issueTypeQuery cfg =
   issueTypes
     (Just $ user cfg)
@@ -176,7 +176,7 @@ issueQuery x cfg =
     (Just $ user cfg)
     (Just $ auth cfg)
 
-changelogQuery :: Text -> Config -> ClientM PageBeanChangelog
+changelogQuery :: Text -> Config -> ClientM JT.PageBeanChangelog
 changelogQuery x cfg =
   changelogs
     x

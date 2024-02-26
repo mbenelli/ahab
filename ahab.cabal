@@ -52,7 +52,7 @@ library
     hs-source-dirs:   lib
     default-language: Haskell2010
 
-test-suite ghidorah-test
+test-suite ahab-test
     import:           warnings
     default-language: Haskell2010
     -- other-modules:

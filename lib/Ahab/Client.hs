@@ -1,14 +1,16 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 module Ahab.Client where
 
-import Data.Default (Default (def))
-import Data.Text as T
 import Ahab.Config
 import Ahab.Jira.Api
 import Ahab.Jira.CustomTypes
-import Ahab.Jira.Types
+import qualified Ahab.Jira.Types as JT
+import BasicPrelude
+import Data.Default (Default (def))
+import Data.Text (append, pack, unpack)
 import Network.Connection (TLSSettings (TLSSettings))
 import Network.HTTP.Client (Manager, newManager)
 import Network.HTTP.Client.TLS (mkManagerSettings, newTlsManager)
@@ -101,7 +103,7 @@ withContinuation :: (Show b) => (Config -> ClientM a) -> (a -> b) -> IO ()
 withContinuation f k = do
   res <- run f
   case res of
-    Left l -> putStrLn $ unpack l
+    Left l -> putStrLn l
     Right r -> pPrintNoColor $ k r
 
 withSearchResult ::
@@ -113,20 +115,20 @@ withSearchResult ::
   IO ()
 withSearchResult q i fs = withContinuation $ searchQuery q i fs
 
-withFields :: (Show a) => ([FieldDetails] -> a) -> IO ()
+withFields :: (Show a) => ([JT.FieldDetails] -> a) -> IO ()
 withFields = withContinuation fieldsQuery
 
-withIssueTypes :: (Show a) => ([IssueTypeDetails] -> a) -> IO ()
+withIssueTypes :: (Show a) => ([JT.IssueTypeDetails] -> a) -> IO ()
 withIssueTypes = withContinuation issueTypeQuery
 
 withIssue :: (Show a) => Text -> (IssueBean -> a) -> IO ()
 withIssue x = withContinuation $ issueQuery x
 
-withChangelog :: (Show a) => Text -> (PageBeanChangelog -> a) -> IO ()
+withChangelog :: (Show a) => Text -> (JT.PageBeanChangelog -> a) -> IO ()
 withChangelog x = withContinuation $ changelogQuery x
 
 createIssue :: CreateIssueRequest -> IO ()
-createIssue x = withContinuation (createIssue' x) Prelude.id
+createIssue x = withContinuation (createIssue' x) id
 
 collectSearchResult ::
   Text ->
@@ -138,12 +140,12 @@ collectSearchResult q i xs = do
   case res of
     Left e -> return $ Left e
     Right r ->
-      if Prelude.null (issues r)
+      if null (issues r)
         then return $ Right xs
         else
           collectSearchResult
             q
-            (Prelude.length (xs ++ (issues r)))
+            (length (xs ++ (issues r)))
             (xs ++ (issues r))
 
 collectSearchResult' :: Text -> Int -> Int -> [IssueBean] -> IO (Either Text [IssueBean])
@@ -152,6 +154,6 @@ collectSearchResult' q i j xs = do
   case res of
     Left e -> return $ Left e
     Right r ->
-      if Prelude.length xs >= j
+      if length xs >= j
         then return $ Right xs
-        else collectSearchResult' q (Prelude.length (xs ++ (issues r))) j (xs ++ (issues r))
+        else collectSearchResult' q (length (xs ++ (issues r))) j (xs ++ (issues r))
