@@ -24,7 +24,7 @@ auth :: Config -> Text
 auth c = T.unwords [authorization c, token c]
 
 defaultConfigFile :: IO String
-defaultConfigFile = getXdgDirectory XdgConfig "ghidorah/config.yaml"
+defaultConfigFile = getXdgDirectory XdgConfig "ahab/config.yaml"
 
 readConfig :: String -> IO (Either ParseException Config)
 readConfig = decodeFileEither
