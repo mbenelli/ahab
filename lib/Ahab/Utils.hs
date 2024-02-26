@@ -1,20 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
 module Ahab.Utils where
 
-import BasicPrelude
-import Data.Aeson (eitherDecode, FromJSON, ToJSON)
-import Data.Aeson.Text (encodeToLazyText)
-import qualified Data.ByteString.Lazy as BL
-import Data.HashMap.Strict as M (fromList, lookup, toList)
-import qualified Data.Text as T
-import qualified Data.Text.Lazy.IO as I
 import Ahab.Client (run)
 import Ahab.Config
 import Ahab.Jira.Api
 import Ahab.Jira.CustomTypes
-import Ahab.Jira.Types
+import qualified Ahab.Jira.Types as JT
+import Ahab.Types
+import BasicPrelude
+import Data.Aeson (FromJSON, ToJSON, eitherDecode)
+import Data.Aeson.Text (encodeToLazyText)
+import qualified Data.ByteString.Lazy as BL
+import Data.HashMap.Strict as M (fromList, lookup, toList)
+import Data.Maybe
+import qualified Data.Text as T
+import qualified Data.Text.Lazy.IO as I
 import Servant.Client (ClientM)
 import System.IO (IOMode (WriteMode), openFile)
 import Text.Pretty.Simple
@@ -23,10 +26,10 @@ import Text.Printf
 -- Save and load from file
 --
 
-fromFile :: FromJSON a => Text -> IO (Either String a)
+fromFile :: (FromJSON a) => Text -> IO (Either String a)
 fromFile f = eitherDecode <$> BL.readFile (T.unpack f)
 
-toFile :: ToJSON a => a -> Text -> IO ()
+toFile :: (ToJSON a) => a -> Text -> IO ()
 toFile i f = I.writeFile (T.unpack f) (encodeToLazyText i)
 
 -- Fiels related information
@@ -39,7 +42,7 @@ allFields = do
     Left e -> return (Left e)
     Right fs -> return $ Right $ fromList $ map getNameId fs
   where
-    getNameId x = (fieldDetails_name x, fieldDetails_id x)
+    getNameId x = (JT.fieldDetails_name x, JT.fieldDetails_id x)
 
 --      getNameId x = case (fieldDetails_name x, fieldDetails_id x) of
 --        (Just n, Just i) -> Just (n, i)
@@ -108,16 +111,16 @@ withSearchResult ::
   IO ()
 withSearchResult q i fs = withContinuation $ searchQuery q i fs
 
-withFields :: (Show a) => ([FieldDetails] -> a) -> IO ()
+withFields :: (Show a) => ([JT.FieldDetails] -> a) -> IO ()
 withFields = withContinuation fieldsQuery
 
-withIssueTypes :: (Show a) => ([IssueTypeDetails] -> a) -> IO ()
+withIssueTypes :: (Show a) => ([JT.IssueTypeDetails] -> a) -> IO ()
 withIssueTypes = withContinuation issueTypeQuery
 
 withIssue :: (Show a) => Text -> (IssueBean -> a) -> IO ()
 withIssue x = withContinuation $ issueQuery x
 
-withChangelog :: (Show a) => Text -> (PageBeanChangelog -> a) -> IO ()
+withChangelog :: (Show a) => Text -> (JT.PageBeanChangelog -> a) -> IO ()
 withChangelog x = withContinuation $ changelogQuery x
 
 createIssue :: CreateIssueRequest -> IO ()
@@ -150,3 +153,11 @@ collectSearchResult' q i j xs = do
       if BasicPrelude.length xs >= j
         then return $ Right xs
         else collectSearchResult' q (BasicPrelude.length (xs ++ (issues r))) j (xs ++ (issues r))
+
+optimisticLoadIssue :: Text -> IO (IssueBean, [Change])
+optimisticLoadIssue f = do
+  eibs :: Either String [IssueBean] <- fromFile f
+  let Right ibs = eibs
+  let ib :: IssueBean = head ibs
+  let cs :: [Change] = fromJust $ getChanges ib
+  return (ib, cs)
