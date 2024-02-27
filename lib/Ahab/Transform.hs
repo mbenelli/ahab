@@ -3,11 +3,12 @@
 
 module Ahab.Transform where
 
+import qualified Ahab.Jira.CustomTypes as CT
 import Ahab.Types
 import BasicPrelude
 import qualified Data.Map as M
 import qualified Data.Set as S
-import Data.Time (UTCTime)
+import Data.Time (UTCTime, getCurrentTime)
 
 issueStates :: [Change] -> M.Map UTCTime Status
 issueStates cs =
@@ -17,15 +18,18 @@ issueStates cs =
         change_field x == "status"
     ]
 
--- FIXME :: this implementation do not consider the last staus chanege,
--- and interpret incorrectly the first one
---
-statusIntervals :: Status -> [Change] -> M.Map UTCTime UTCTime
-statusIntervals s cs = M.fromList $ zip to from
-  where
-    changes = filter (\x -> change_field x == "status") cs
-    to = [change_timestamp x | x <- changes, Status (change_toString x) == s]
-    from = [change_timestamp x | x <- changes, Status (change_fromString x) == s]
+history :: UTCTime -> (Change -> Bool) -> (Text -> a) -> [Change] -> [(UTCTime, a)]
+history _ _ _ [] = []
+history t0 f ctor (c : cs) = (t0, ctor $ change_fromString c) : [(change_timestamp x, ctor $ change_toString x) | x <- c : cs, f x]
+
+intervals :: [(UTCTime, a)] -> IO [(UTCTime, UTCTime, a)]
+intervals ((t0, a0) : (t1, a1) : xs) = do
+  ys <- intervals ((t1, a1) : xs)
+  return $ (t0, t1, a0) : ys
+intervals [(ti, ai)] = do
+  t <- getCurrentTime
+  return [(ti, t, ai)]
+intervals [] = return []
 
 assignees :: [Change] -> S.Set User
 assignees cs = S.fromList [User $ change_toString x | x <- cs, change_field x == "assignee"]
