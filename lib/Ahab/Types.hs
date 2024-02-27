@@ -21,7 +21,7 @@ import BasicPrelude hiding (id, isPrefixOf, lookup)
 import Codec.Rot13
 import Data.HashMap.Strict (filterWithKey)
 import Data.Text (isPrefixOf, unpack)
-import Data.Time (UTCTime, zonedTimeToUTC)
+import Data.Time (NominalDiffTime, UTCTime, diffUTCTime, zonedTimeToUTC)
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import GHC.Generics
 
@@ -37,6 +37,9 @@ begin (Interval b _) = b
 
 end :: Interval -> UTCTime
 end (Interval _ e) = e
+
+duration :: Interval -> NominalDiffTime
+duration (Interval b e) = diffUTCTime e b
 
 parseTime :: Text -> Maybe UTCTime
 parseTime s = do
