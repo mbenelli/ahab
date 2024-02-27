@@ -44,5 +44,24 @@ intervals' ((t0, a0) : (t1, a1) : xs) = (t0, t1, a0) : intervals' ((t1, a1) : xs
 intervals' [(_, _)] = []
 intervals' [] = []
 
-assignees :: [Change] -> S.Set User
-assignees cs = S.fromList [User $ change_toString x | x <- cs, change_field x == "assignee"]
+states :: (Issue a) => a -> Maybe (M.Map Interval Status)
+states i = do
+  cs <- changelog i
+  return
+    $ M.fromList
+    $ map (\(t0, t1, x) -> (Interval t0 t1, x))
+    $ intervals'
+    $ history
+      (created i)
+      (\x -> change_field x == "status")
+      Status
+      cs
+
+assignees :: (Issue a) => a -> Maybe (S.Set User)
+assignees i = do
+  cs <- changelog i
+  u <- assignee i
+  return
+    $ S.fromList
+    $ u
+    : [User $ change_toString x | x <- cs, change_field x == "assignee"]
