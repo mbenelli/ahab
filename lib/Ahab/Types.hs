@@ -25,6 +25,19 @@ import Data.Time (UTCTime, zonedTimeToUTC)
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import GHC.Generics
 
+data Interval = Interval !UTCTime !UTCTime
+  deriving (Show, Eq)
+
+instance Ord Interval where
+  (<) a b = begin a < begin b
+  (<=) a b = a == b || a < b
+
+begin :: Interval -> UTCTime
+begin (Interval b _) = b
+
+end :: Interval -> UTCTime
+end (Interval _ e) = e
+
 parseTime :: Text -> Maybe UTCTime
 parseTime s = do
   t <- parseTimeM False defaultTimeLocale "%Y-%m-%dT%H:%M:%S%Q%z" $ unpack s
@@ -62,6 +75,7 @@ class Issue a where
   fixversion :: a -> Maybe [Text]
   versions :: a -> Maybe [Text]
   components :: a -> Maybe [Text]
+  changelog :: a -> Maybe [Change]
 
 data CoreIssue = CoreIssue
   { issue_id :: !Text,
@@ -79,7 +93,8 @@ data CoreIssue = CoreIssue
     issue_resolutiondate :: !(Maybe UTCTime),
     issue_fixversion :: !(Maybe [Text]),
     issue_versions :: !(Maybe [Text]),
-    issue_components :: !(Maybe [Text])
+    issue_components :: !(Maybe [Text]),
+    issue_changelog :: !(Maybe [Change])
   }
   deriving (Show, Generic)
 
@@ -99,6 +114,7 @@ instance Issue CoreIssue where
   fixversion = issue_fixversion
   versions = issue_versions
   components = issue_components
+  changelog = issue_changelog
 
 toIssue :: IssueBean -> Maybe CoreIssue
 toIssue x = do
@@ -141,7 +157,8 @@ toIssue x = do
         issue_versions = do
           v <- issueObject_versions obj
           return $ map JT.version_name v,
-        issue_components = Nothing
+        issue_components = Nothing,
+        issue_changelog = getChanges x
       }
 
 data Change = Change
