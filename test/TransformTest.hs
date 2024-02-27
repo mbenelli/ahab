@@ -86,13 +86,13 @@ expectedStates =
 expectedHistory :: [(UTCTime, T.Status)]
 expectedHistory = zip (time0 : expectedTimestamps) statusSequence01
 
-expectedIntervals :: IO [(UTCTime, UTCTime, T.Status)]
+expectedIntervals :: IO [(T.Interval, T.Status)]
 expectedIntervals = do
   t <- getCurrentTime
   return
-    $ zip3
-      (time0 : expectedTimestamps)
-      (expectedTimestamps ++ [t])
+    $ zip
+      (zipWith
+        T.Interval (time0 : expectedTimestamps) (expectedTimestamps ++ [t]))
       statusSequence01
 
 transformTest :: [Test]

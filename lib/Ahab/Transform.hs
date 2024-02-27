@@ -27,20 +27,21 @@ history t0 f ctor (c : cs) =
 -- to its current state to now. Since it gets the current time
 -- it returns an IO
 --
-intervals :: [(UTCTime, a)] -> IO [(UTCTime, UTCTime, a)]
+intervals :: [(UTCTime, a)] -> IO [(Interval, a)]
 intervals ((t0, a0) : (t1, a1) : xs) = do
   ys <- intervals ((t1, a1) : xs)
-  return $ (t0, t1, a0) : ys
+  return $ (Interval t0 t1, a0) : ys
 intervals [(ti, ai)] = do
   t <- getCurrentTime
-  return [(ti, t, ai)]
+  return [(Interval ti t, ai)]
 intervals [] = return []
 
 -- Get all intervals except the last one, that it the current state.
 -- Useful for closed issues
 --
-intervals' :: [(UTCTime, a)] -> [(UTCTime, UTCTime, a)]
-intervals' ((t0, a0) : (t1, a1) : xs) = (t0, t1, a0) : intervals' ((t1, a1) : xs)
+intervals' :: [(UTCTime, a)] -> [(Interval, a)]
+intervals' ((t0, a0) : (t1, a1) : xs) =
+  (Interval t0 t1, a0) : intervals' ((t1, a1) : xs)
 intervals' [(_, _)] = []
 intervals' [] = []
 
@@ -49,7 +50,6 @@ states i = do
   cs <- changelog i
   return
     $ M.fromList
-    $ map (\(t0, t1, x) -> (Interval t0 t1, x))
     $ intervals'
     $ history
       (created i)
