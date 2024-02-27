@@ -14,8 +14,8 @@ import BasicPrelude
 import Data.Aeson (FromJSON, ToJSON, eitherDecode)
 import Data.Aeson.Text (encodeToLazyText)
 import qualified Data.ByteString.Lazy as BL
+import Data.Either (fromRight)
 import Data.HashMap.Strict as M (fromList, lookup, toList)
-import Data.Maybe
 import qualified Data.Text as T
 import qualified Data.Text.Lazy.IO as I
 import Servant.Client (ClientM)
@@ -141,7 +141,7 @@ collectSearchResult q i xs = do
         else
           collectSearchResult
             q
-            (BasicPrelude.length (xs ++ issues r))
+            (length (xs ++ issues r))
             (xs ++ issues r)
 
 collectSearchResult' :: Text -> Int -> Int -> [IssueBean] -> IO (Either Text [IssueBean])
@@ -150,15 +150,19 @@ collectSearchResult' q i j xs = do
   case res of
     Left e -> return $ Left e
     Right r ->
-      if BasicPrelude.length xs >= j
+      if length xs >= j
         then return $ Right xs
-        else collectSearchResult' q (BasicPrelude.length (xs ++ (issues r))) j (xs ++ (issues r))
+        else collectSearchResult' q (length (xs ++ (issues r))) j (xs ++ (issues r))
+
+-- Unsafe code used for repl data exploration
+--
+nullIssueBean :: IssueBean
+nullIssueBean = IssueBean "0" "0" Nothing Nothing Nothing Nothing
 
 optimisticLoadIssue :: Text -> IO (IssueBean, [Change])
 optimisticLoadIssue f = do
   eibs :: Either String [IssueBean] <- fromFile f
-  let Right ibs = eibs
+  let ibs = fromRight [nullIssueBean] eibs
   let ib :: IssueBean = head ibs
-  let cs :: [Change] = fromJust $ getChanges ib
+  let cs :: [Change] = fromMaybe [] $ getChanges ib
   return (ib, cs)
-

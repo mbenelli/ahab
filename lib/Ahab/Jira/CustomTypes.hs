@@ -2,10 +2,10 @@
 
 module Ahab.Jira.CustomTypes where
 
+import Ahab.Jira.Types
 import Data.Aeson
 import Data.Text
 import GHC.Generics
-import Ahab.Jira.Types
 
 data IssueObject = IssueObject
   { issueObject_project :: !Project,
@@ -32,12 +32,12 @@ instance FromJSON IssueObject where parseJSON = genericParseJSON options
 instance ToJSON IssueObject where toJSON = genericToJSON options
 
 data IssueBean = IssueBean
-  { issueBean_changelog :: !(Maybe PageOfChangelogs),
+  { issueBean_id :: !Text,
+    issueBean_key :: !Text,
+    issueBean_changelog :: !(Maybe PageOfChangelogs),
     issueBean_expand :: !(Maybe Text),
     issueBean_fields :: !(Maybe IssueObject),
-    issueBean_fieldsToInclude :: !(Maybe IncludedFields),
-    issueBean_id :: !Text,
-    issueBean_key :: !Text
+    issueBean_fieldsToInclude :: !(Maybe IncludedFields)
   }
   deriving (Show, Generic)
 
