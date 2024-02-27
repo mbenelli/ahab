@@ -89,7 +89,11 @@ expectedHistory = zip (time0 : expectedTimestamps) statusSequence01
 expectedIntervals :: IO [(UTCTime, UTCTime, T.Status)]
 expectedIntervals = do
   t <- getCurrentTime
-  return $ zip3 (time0 : expectedTimestamps) (expectedTimestamps ++ [t]) statusSequence01
+  return
+    $ zip3
+      (time0 : expectedTimestamps)
+      (expectedTimestamps ++ [t])
+      statusSequence01
 
 transformTest :: [Test]
 transformTest =
@@ -107,7 +111,10 @@ transformTest =
     TestLabel
       "history"
       ( TestCase $ do
-          assertEqual "" expectedHistory $ history time0 (\x -> T.change_field x == "status") T.Status sampleChanges01
+          assertEqual ""
+            expectedHistory
+              $ history time0 (\x -> T.change_field x == "status") T.Status
+            sampleChanges01
       ),
     TestLabel
       "intervals"
