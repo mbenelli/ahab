@@ -1,3 +1,14 @@
+-- |
+-- Module: Ahab.Types 
+-- Description: Types definitions
+-- Copyright: (c) Marco Benelli 2024
+-- License: ISC
+-- Maintainer: mbenelli@fastmail.com 
+-- 
+-- Type definitios for Ahab project. 
+-- Most important types are 'Change' and 'Issue'.
+--
+--
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeSynonymInstances #-}

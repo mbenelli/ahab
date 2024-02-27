@@ -1,3 +1,10 @@
+-- |
+-- Module: Ahab.Config
+-- Description: Configuration
+-- Copyright: (c) Marco Benelli 2024
+-- License: ISC
+-- Maintainer: mbenelli@fastmail.com 
+-- 
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 

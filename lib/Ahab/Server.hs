@@ -1,3 +1,14 @@
+-- |
+-- Module: Ahab.Server
+-- Description: Web Server
+-- Copyright: (c) Marco Benelli 2024
+-- License: ISC
+-- Maintainer: mbenelli@fastmail.com 
+--
+-- Simple web server inteded to be used for handling webhooks. 
+-- Still a work in progress.
+--
+
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TypeOperators #-}

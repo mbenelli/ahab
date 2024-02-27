@@ -1,3 +1,12 @@
+-- |
+-- Module: Ahab.Jira.Types
+-- Description: Jira types
+-- Copyright: (c) Marco Benelli 2024
+-- License: ISC
+-- Maintainer: mbenelli@fastmail.com 
+--
+
+
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase #-}

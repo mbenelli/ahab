@@ -1,3 +1,11 @@
+-- |
+-- Module: Ahab.Client
+-- Description: HTTP REST client
+-- Copyright: (c) Marco Benelli 2024
+-- License: ISC
+-- Maintainer: mbenelli@fastmail.com 
+-- 
+
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}

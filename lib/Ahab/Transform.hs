@@ -1,3 +1,11 @@
+-- |
+-- Module: Ahab.Transformer
+-- Description: Data transformations
+-- Copyright: (c) Marco Benelli 2024
+-- License: ISC
+-- Maintainer: mbenelli@fastmail.com 
+--
+
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
