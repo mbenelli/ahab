@@ -115,5 +115,11 @@ transformTest =
           i <- intervals expectedHistory
           e <- expectedIntervals
           assertEqual "" (take 4 e) (take 4 i)
+      ),
+    TestLabel
+      "intervals'"
+      ( TestCase $ do
+          e <- expectedIntervals
+          assertEqual "" (take 4 e) $ intervals' expectedHistory
       )
   ]
