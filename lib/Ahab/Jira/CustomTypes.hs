@@ -1,20 +1,18 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 -- |
 -- Module: Ahab.Jira.CustomTypes
 -- Description: Custom definions of some Jira types
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
--- Maintainer: mbenelli@fastmail.com 
+-- Maintainer: mbenelli@fastmail.com
 --
--- Some Jira types have many fields that are rarely used 
--- and/or dependand from customizations. 
--- This modules provides a core implementation of these 
--- types that should work in most situation. 
--- User of the library may choose to define alternatives 
+-- Some Jira types have many fields that are rarely used
+-- and/or dependand from customizations.
+-- This modules provides a core implementation of these
+-- types that should work in most situation.
+-- User of the library may choose to define alternatives
 -- to the types defined here.
---
-
-{-# LANGUAGE DeriveGeneric #-}
-
 module Ahab.Jira.CustomTypes where
 
 import Ahab.Jira.Types

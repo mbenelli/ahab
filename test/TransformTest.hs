@@ -1,15 +1,13 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+
 -- |
 -- Module: TranformTest
 -- Description: Test transformations
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
--- Maintainer: mbenelli@fastmail.com 
---
-
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE NoImplicitPrelude #-}
-
+-- Maintainer: mbenelli@fastmail.com
 module TransformTest where
 
 import qualified Ahab.Jira.CustomTypes as CT
@@ -99,8 +97,11 @@ expectedIntervals = do
   t <- getCurrentTime
   return
     $ zip
-      (zipWith
-        T.Interval (time0 : expectedTimestamps) (expectedTimestamps ++ [t]))
+      ( zipWith
+          T.Interval
+          (time0 : expectedTimestamps)
+          (expectedTimestamps ++ [t])
+      )
       statusSequence01
 
 transformTest :: [Test]
@@ -119,10 +120,14 @@ transformTest =
     TestLabel
       "history"
       ( TestCase $ do
-          assertEqual ""
+          assertEqual
+            ""
             expectedHistory
-              $ history time0 (\x -> T.change_field x == "status") T.Status
-            sampleChanges01
+            $ history
+              time0
+              (\x -> T.change_field x == "status")
+              T.Status
+              sampleChanges01
       ),
     TestLabel
       "intervals"

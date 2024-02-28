@@ -1,13 +1,12 @@
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
+
 -- |
 -- Module: Ahab.Config
 -- Description: Configuration
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
--- Maintainer: mbenelli@fastmail.com 
--- 
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
-
+-- Maintainer: mbenelli@fastmail.com
 module Ahab.Config where
 
 import Data.Text as T

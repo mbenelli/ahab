@@ -1,13 +1,11 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 -- |
 -- Module: ConfigTest
 -- Description: Test reading and parsing configuration
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
--- Maintainer: mbenelli@fastmail.com 
---
-
-{-# LANGUAGE OverloadedStrings #-}
-
+-- Maintainer: mbenelli@fastmail.com
 module ConfigTest where
 
 import Ahab.Config

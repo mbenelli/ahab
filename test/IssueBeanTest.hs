@@ -1,14 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+
 -- |
 -- Module: IssueBeanTest
 -- Description: Test reading and parsing sample 'IssueBean's
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
--- Maintainer: mbenelli@fastmail.com 
---
-
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-
+-- Maintainer: mbenelli@fastmail.com
 module IssueBeanTest where
 
 import qualified Ahab.Jira.CustomTypes as CT

@@ -1,20 +1,18 @@
--- |
--- Module: Ahab.Jira.Api
--- Description: Subset of Jira API
--- Copyright: (c) Marco Benelli 2024
--- License: ISC
--- Maintainer: mbenelli@fastmail.com 
---
--- Client interface for a subset of Jira API. 
--- The most important API call is the one to "search", that 
--- allow the user to make JQL queries. 
---
-
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
+-- |
+-- Module: Ahab.Jira.Api
+-- Description: Subset of Jira API
+-- Copyright: (c) Marco Benelli 2024
+-- License: ISC
+-- Maintainer: mbenelli@fastmail.com
+--
+-- Client interface for a subset of Jira API.
+-- The most important API call is the one to "search", that
+-- allow the user to make JQL queries.
 module Ahab.Jira.Api where
 
 import Ahab.Config

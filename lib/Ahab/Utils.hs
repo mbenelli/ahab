@@ -1,15 +1,13 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+
 -- |
 -- Module: Ahab.Utils
 -- Description: Miscellaneous utilities
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
--- Maintainer: mbenelli@fastmail.com 
---
-
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE NoImplicitPrelude #-}
-
+-- Maintainer: mbenelli@fastmail.com
 module Ahab.Utils where
 
 import Ahab.Client (run)

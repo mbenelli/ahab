@@ -1,13 +1,11 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+
 -- |
 -- Module: Main
 -- Description: Test suite
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
--- Maintainer: mbenelli@fastmail.com 
---
-
-{-# LANGUAGE NoImplicitPrelude #-}
-
+-- Maintainer: mbenelli@fastmail.com
 module Main (main) where
 
 import BasicPrelude
