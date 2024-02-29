@@ -14,7 +14,7 @@ import BasicPrelude
 import qualified Data.HashMap.Strict as H
 import qualified Data.Map as M
 import qualified Data.Set as S
-import Data.Time (UTCTime, getCurrentTime)
+import Data.Time (NominalDiffTime, UTCTime, getCurrentTime)
 
 groupByKey :: (Eq k, Hashable k) => (v -> k) -> [v] -> H.HashMap k [v]
 groupByKey f = foldr (\x -> H.insertWith (++) (f x) [x]) H.empty
@@ -66,6 +66,15 @@ states i = do
       (\x -> change_field x == "status")
       Status
       cs
+
+cumulativeStatusTime :: (Issue a) => a -> Status -> Maybe NominalDiffTime
+cumulativeStatusTime i s =
+  states i
+    >>= Just
+    . M.foldrWithKey
+      ( \k v t -> if v == s then t + duration k else t
+      )
+      0
 
 assignees :: (Issue a) => a -> Maybe (S.Set User)
 assignees i = do
