@@ -83,4 +83,4 @@ assignees i = do
   return
     $ S.fromList
     $ u
-    : [User $ change_toString x | x <- cs, change_field x == "assignee"]
+    : [pseudononimize $ change_toString x | x <- cs, change_field x == "assignee"]

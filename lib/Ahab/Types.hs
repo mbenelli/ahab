@@ -70,10 +70,12 @@ newtype Resolution = Resolution Text
 
 pseudonomizeUser :: JT.UserDetails -> User
 pseudonomizeUser =
-  User
-    . rot13
+  pseudononimize
     . fromMaybe "anonymous"
     . JT.userDetails_displayName
+
+pseudononimize :: Text -> User
+pseudononimize = User . rot13
 
 class Issue a where
   key :: a -> Text
