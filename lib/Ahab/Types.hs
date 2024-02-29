@@ -157,24 +157,18 @@ toIssue x = do
         issue_created = _created,
         issue_creator = pseudonomizeUser _creator,
         issue_description = issueObject_description obj,
-        issue_assignee = do
-          _assignee <- issueObject_assignee obj
-          return $ pseudonomizeUser _assignee,
-        issue_reporter = do
-          _reporter <- issueObject_reporter obj
-          return $ pseudonomizeUser _reporter,
-        issue_resolution = do
-          r <- issueObject_resolution obj
-          return $ Resolution $ JT.resolution_name r,
-        issue_resolutiondate = do
-          t <- issueObject_resolutiondate obj
-          parseTime t,
-        issue_fixversion = do
-          v <- issueObject_fixVersions obj
-          return $ map JT.version_name v,
-        issue_versions = do
-          v <- issueObject_versions obj
-          return $ map JT.version_name v,
+        issue_assignee = issueObject_assignee obj
+          >>= Just . pseudonomizeUser,
+        issue_reporter = issueObject_reporter obj
+          >>= Just . pseudonomizeUser,
+        issue_resolution = issueObject_resolution obj
+          >>= Just . Resolution . JT.resolution_name,
+        issue_resolutiondate = issueObject_resolutiondate obj
+          >>= parseTime,
+        issue_fixversion = issueObject_fixVersions obj
+          >>= \vs -> Just $ map JT.version_name vs,
+        issue_versions = issueObject_versions obj
+          >>= \vs -> Just $ map JT.version_name vs,
         issue_components = Nothing,
         issue_changelog = getChanges x
       }
