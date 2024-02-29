@@ -65,6 +65,9 @@ newtype IssueType = IssueType Text
 newtype User = User Text
   deriving (Eq, Ord, Hashable, Show, Generic)
 
+newtype Resolution = Resolution Text
+  deriving (Eq, Hashable, Show, Generic)
+
 pseudonomizeUser :: JT.UserDetails -> User
 pseudonomizeUser =
   User
@@ -83,7 +86,7 @@ class Issue a where
   description :: a -> Maybe Text
   assignee :: a -> Maybe User
   reporter :: a -> Maybe User
-  resolution :: a -> Maybe Text
+  resolution :: a -> Maybe Resolution
   resolutiondate :: a -> Maybe UTCTime
   fixversion :: a -> Maybe [Text]
   versions :: a -> Maybe [Text]
@@ -102,7 +105,7 @@ data CoreIssue = CoreIssue
     issue_description :: !(Maybe Text),
     issue_assignee :: !(Maybe User),
     issue_reporter :: !(Maybe User),
-    issue_resolution :: !(Maybe Text),
+    issue_resolution :: !(Maybe Resolution),
     issue_resolutiondate :: !(Maybe UTCTime),
     issue_fixversion :: !(Maybe [Text]),
     issue_versions :: !(Maybe [Text]),
@@ -160,7 +163,7 @@ toIssue x = do
           return $ pseudonomizeUser _reporter,
         issue_resolution = do
           r <- issueObject_resolution obj
-          return $ JT.resolution_name r,
+          return $ Resolution $ JT.resolution_name r,
         issue_resolutiondate = do
           t <- issueObject_resolutiondate obj
           parseTime t,
