@@ -11,9 +11,13 @@ module Ahab.Transform where
 
 import Ahab.Types
 import BasicPrelude
+import qualified Data.HashMap.Strict as H
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Data.Time (UTCTime, getCurrentTime)
+
+groupByKey :: (Eq k, Hashable k) => (v -> k) -> [v] -> H.HashMap k [v]
+groupByKey f = foldr (\x -> H.insertWith (++) (f x) [x]) H.empty
 
 issueStates :: [Change] -> M.Map UTCTime Status
 issueStates cs =
