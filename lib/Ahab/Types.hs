@@ -96,43 +96,43 @@ class Issue a where
   changelog :: a -> Maybe [Change]
 
 data CoreIssue = CoreIssue
-  { issue_id :: !Text,
-    issue_key :: !Text,
-    issue_issuetype :: !IssueType,
-    issue_summary :: !Text,
-    issue_project :: !Text,
-    issue_status :: !Status,
-    issue_created :: !UTCTime,
-    issue_creator :: !User,
-    issue_description :: !(Maybe Text),
-    issue_assignee :: !(Maybe User),
-    issue_reporter :: !(Maybe User),
-    issue_resolution :: !(Maybe Resolution),
-    issue_resolutiondate :: !(Maybe UTCTime),
-    issue_fixversion :: !(Maybe [Text]),
-    issue_versions :: !(Maybe [Text]),
-    issue_components :: !(Maybe [Text]),
-    issue_changelog :: !(Maybe [Change])
+  { coreIssue_id :: !Text,
+    coreIssue_key :: !Text,
+    coreIssue_issuetype :: !IssueType,
+    coreIssue_summary :: !Text,
+    coreIssue_project :: !Text,
+    coreIssue_status :: !Status,
+    coreIssue_created :: !UTCTime,
+    coreIssue_creator :: !User,
+    coreIssue_description :: !(Maybe Text),
+    coreIssue_assignee :: !(Maybe User),
+    coreIssue_reporter :: !(Maybe User),
+    coreIssue_resolution :: !(Maybe Resolution),
+    coreIssue_resolutiondate :: !(Maybe UTCTime),
+    coreIssue_fixversion :: !(Maybe [Text]),
+    coreIssue_versions :: !(Maybe [Text]),
+    coreIssue_components :: !(Maybe [Text]),
+    coreIssue_changelog :: !(Maybe [Change])
   }
   deriving (Show, Generic)
 
 instance Issue CoreIssue where
-  key = issue_key
-  issuetype = issue_issuetype
-  summary = issue_summary
-  project = issue_project
-  status = issue_status
-  created = issue_created
-  creator = issue_creator
-  description = issue_description
-  assignee = issue_assignee
-  reporter = issue_reporter
-  resolution = issue_resolution
-  resolutiondate = issue_resolutiondate
-  fixversion = issue_fixversion
-  versions = issue_versions
-  components = issue_components
-  changelog = issue_changelog
+  key = coreIssue_key
+  issuetype = coreIssue_issuetype
+  summary = coreIssue_summary
+  project = coreIssue_project
+  status = coreIssue_status
+  created = coreIssue_created
+  creator = coreIssue_creator
+  description = coreIssue_description
+  assignee = coreIssue_assignee
+  reporter = coreIssue_reporter
+  resolution = coreIssue_resolution
+  resolutiondate = coreIssue_resolutiondate
+  fixversion = coreIssue_fixversion
+  versions = coreIssue_versions
+  components = coreIssue_components
+  changelog = coreIssue_changelog
 
 toIssue :: IssueBean -> Maybe CoreIssue
 toIssue x = do
@@ -148,29 +148,29 @@ toIssue x = do
   _created <- parseTime $ issueObject_created obj
   return
     CoreIssue
-      { issue_id = issueBean_id x,
-        issue_key = issueBean_key x,
-        issue_issuetype = IssueType typename,
-        issue_summary = _summary,
-        issue_project = _projectName,
-        issue_status = Status _statusName,
-        issue_created = _created,
-        issue_creator = pseudonomizeUser _creator,
-        issue_description = issueObject_description obj,
-        issue_assignee = issueObject_assignee obj
+      { coreIssue_id = issueBean_id x,
+        coreIssue_key = issueBean_key x,
+        coreIssue_issuetype = IssueType typename,
+        coreIssue_summary = _summary,
+        coreIssue_project = _projectName,
+        coreIssue_status = Status _statusName,
+        coreIssue_created = _created,
+        coreIssue_creator = pseudonomizeUser _creator,
+        coreIssue_description = issueObject_description obj,
+        coreIssue_assignee = issueObject_assignee obj
           >>= Just . pseudonomizeUser,
-        issue_reporter = issueObject_reporter obj
+        coreIssue_reporter = issueObject_reporter obj
           >>= Just . pseudonomizeUser,
-        issue_resolution = issueObject_resolution obj
+        coreIssue_resolution = issueObject_resolution obj
           >>= Just . Resolution . JT.resolution_name,
-        issue_resolutiondate = issueObject_resolutiondate obj
+        coreIssue_resolutiondate = issueObject_resolutiondate obj
           >>= parseTime,
-        issue_fixversion = issueObject_fixVersions obj
+        coreIssue_fixversion = issueObject_fixVersions obj
           >>= \vs -> Just $ map JT.version_name vs,
-        issue_versions = issueObject_versions obj
+        coreIssue_versions = issueObject_versions obj
           >>= \vs -> Just $ map JT.version_name vs,
-        issue_components = Nothing,
-        issue_changelog = getChanges x
+        coreIssue_components = Nothing,
+        coreIssue_changelog = getChanges x
       }
 
 data Change = Change
