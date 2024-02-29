@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE NoImplicitPrelude #-}
@@ -55,11 +56,14 @@ parseTime s = do
   t <- parseTimeM False defaultTimeLocale "%Y-%m-%dT%H:%M:%S%Q%z" $ unpack s
   return $ zonedTimeToUTC t
 
-data IssueType = Task | Story | Bug | Epic | Other
-  deriving (Eq, Show, Generic)
+newtype Status = Status Text
+  deriving (Eq, Hashable, Show, Generic)
+
+newtype IssueType = IssueType Text
+  deriving (Eq, Hashable, Show, Generic)
 
 newtype User = User Text
-  deriving (Ord, Eq, Show, Generic)
+  deriving (Eq, Ord, Hashable, Show, Generic)
 
 pseudonomizeUser :: JT.UserDetails -> User
 pseudonomizeUser =
@@ -67,9 +71,6 @@ pseudonomizeUser =
     . rot13
     . fromMaybe "anonymous"
     . JT.userDetails_displayName
-
-newtype Status = Status Text
-  deriving (Eq, Show, Generic)
 
 class Issue a where
   key :: a -> Text
@@ -144,7 +145,7 @@ toIssue x = do
     CoreIssue
       { issue_id = issueBean_id x,
         issue_key = issueBean_key x,
-        issue_issuetype = issueType typename,
+        issue_issuetype = IssueType typename,
         issue_summary = _summary,
         issue_project = _projectName,
         issue_status = Status _statusName,
@@ -215,14 +216,6 @@ toChanges c = do
             }
       )
       items
-
-issueType :: Text -> IssueType
-issueType x = case x of
-  "Story" -> Story
-  "Task" -> Task
-  "Bug" -> Bug
-  "Epic" -> Epic
-  _ -> Other
 
 customFields :: HashMap Text Text -> HashMap Text Text
 customFields = filterWithKey (\k _ -> "customfield_" `isPrefixOf` k)
