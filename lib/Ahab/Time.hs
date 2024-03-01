@@ -4,8 +4,19 @@
 module Ahab.Time where
 
 import BasicPrelude
+import qualified Data.Map as M
 import Data.Text (unpack)
-import Data.Time (DayOfWeek (Saturday, Sunday), NominalDiffTime, UTCTime, dayOfWeek, diffUTCTime, utctDay, zonedTimeToUTC)
+import Data.Time
+  ( DayOfWeek (Saturday, Sunday),
+    NominalDiffTime,
+    UTCTime,
+    dayOfWeek,
+    diffUTCTime,
+    utctDay,
+    zonedTimeToUTC,
+  )
+import Data.Time.Calendar (DayOfWeek (Monday), Year)
+import Data.Time.Calendar.WeekDate (FirstWeekType (..), WeekOfYear, toWeekCalendar)
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 
 data TimeInterval = TimeInterval !UTCTime !UTCTime
@@ -46,3 +57,13 @@ workingDays i =
   where
     b = utctDay $ begin i
     e = utctDay $ end i
+
+partitionByWeek :: [a] -> (a -> UTCTime) -> M.Map (Year, WeekOfYear) [a]
+partitionByWeek xs t =
+  foldl'
+    ( \m x ->
+        let (y, w, _) = toWeekCalendar FirstWholeWeek Monday $ utctDay $ t x
+         in M.insertWith (++) (y, w) [x] m
+    )
+    M.empty
+    xs
