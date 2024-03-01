@@ -45,7 +45,7 @@ parseTime s = do
 -- Weekends are excluded, beginning and end days are included in the count.
 -- Remarks:
 -- Timestamp are in UTC time zone.
--- Holidays are not considered are they are not known.
+-- Holidays are not considered as they are not known.
 workingDays :: TimeInterval -> Int
 workingDays i =
   foldl'
@@ -58,12 +58,11 @@ workingDays i =
     b = utctDay $ begin i
     e = utctDay $ end i
 
-partitionByWeek :: [a] -> (a -> UTCTime) -> M.Map (Year, WeekOfYear) [a]
-partitionByWeek xs t =
+partitionByWeek :: (a -> UTCTime) -> [a] -> M.Map (Year, WeekOfYear) [a]
+partitionByWeek t =
   foldl'
     ( \m x ->
         let (y, w, _) = toWeekCalendar FirstWholeWeek Monday $ utctDay $ t x
          in M.insertWith (++) (y, w) [x] m
     )
     M.empty
-    xs
