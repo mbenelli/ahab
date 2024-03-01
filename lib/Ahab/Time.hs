@@ -1,6 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
+-- |
+-- Module: Ahab.Time
+-- Description: Time Utilities 
+-- Copyright: (c) Marco Benelli 2024
+-- License: ISC
+-- Maintainer: mbenelli@fastmail.com
 module Ahab.Time where
 
 import BasicPrelude
@@ -58,6 +64,9 @@ workingDays i =
     b = utctDay $ begin i
     e = utctDay $ end i
 
+-- | Partition a list by week 
+-- Given a fuction that maps each element of the list to a date,
+-- returns the elements grouped by week.
 partitionByWeek :: (a -> UTCTime) -> [a] -> M.Map (Year, WeekOfYear) [a]
 partitionByWeek t =
   foldl'
