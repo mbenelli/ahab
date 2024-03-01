@@ -68,14 +68,22 @@ states i = do
       Status
       cs
 
-cumulativeStatusTime :: (Issue a) => a -> Status -> Maybe NominalDiffTime
-cumulativeStatusTime i s =
+-- | Collect of the intervals of the given status, apply the given function
+-- to each of them, and sum the results.
+cumulativeStatusTime' :: (Issue a, Num b) => (TimeInterval -> b) -> a -> Status -> Maybe b
+cumulativeStatusTime' f i s =
   states i
     >>= Just
     . M.foldrWithKey
-      ( \k v t -> if v == s then t + duration k else t
+      ( \k v t -> if v == s then t + f k else t
       )
       0
+
+cumulativeStatusTime :: (Issue a) => a -> Status -> Maybe NominalDiffTime
+cumulativeStatusTime = cumulativeStatusTime' duration
+
+cumulativeStatusWorkingDays :: (Issue a) => a -> Status -> Maybe Int
+cumulativeStatusWorkingDays = cumulativeStatusTime' workingDays
 
 assignees :: (Issue a) => a -> Maybe (S.Set User)
 assignees i = do
