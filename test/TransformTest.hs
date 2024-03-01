@@ -11,6 +11,7 @@
 module TransformTest where
 
 import qualified Ahab.Jira.CustomTypes as CT
+import Ahab.Time (TimeInterval (..), parseTime)
 import Ahab.Transform
 import qualified Ahab.Types as T
 import qualified Ahab.Utils as U
@@ -63,7 +64,7 @@ time0 = addUTCTime (-nominalDay) (head expectedTimestamps)
 expectedTimestamps :: [UTCTime]
 expectedTimestamps =
   mapMaybe
-    T.parseTime
+    parseTime
     [ "2024-01-29T09:04:34.533+0000",
       "2024-01-29T09:04:59.866+0000",
       "2024-01-29T09:08:06.018+0000",
@@ -92,13 +93,13 @@ expectedStates =
 expectedHistory :: [(UTCTime, T.Status)]
 expectedHistory = zip (time0 : expectedTimestamps) statusSequence01
 
-expectedIntervals :: IO [(T.Interval, T.Status)]
+expectedIntervals :: IO [(TimeInterval, T.Status)]
 expectedIntervals = do
   t <- getCurrentTime
   return
     $ zip
       ( zipWith
-          T.Interval
+          TimeInterval
           (time0 : expectedTimestamps)
           (expectedTimestamps ++ [t])
       )

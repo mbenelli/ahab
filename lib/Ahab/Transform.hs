@@ -9,6 +9,7 @@
 -- Maintainer: mbenelli@fastmail.com
 module Ahab.Transform where
 
+import Ahab.Time
 import Ahab.Types
 import BasicPrelude
 import qualified Data.HashMap.Strict as H
@@ -37,25 +38,25 @@ history t0 f ctor (c : cs) =
 -- to its current state to now. Since it gets the current time
 -- it returns an IO
 --
-intervals :: [(UTCTime, a)] -> IO [(Interval, a)]
+intervals :: [(UTCTime, a)] -> IO [(TimeInterval, a)]
 intervals ((t0, a0) : (t1, a1) : xs) = do
   ys <- intervals ((t1, a1) : xs)
-  return $ (Interval t0 t1, a0) : ys
+  return $ (TimeInterval t0 t1, a0) : ys
 intervals [(ti, ai)] = do
   t <- getCurrentTime
-  return [(Interval ti t, ai)]
+  return [(TimeInterval ti t, ai)]
 intervals [] = return []
 
 -- Get all intervals except the last one, that it the current state.
 -- Useful for closed issues
 --
-intervals' :: [(UTCTime, a)] -> [(Interval, a)]
+intervals' :: [(UTCTime, a)] -> [(TimeInterval, a)]
 intervals' ((t0, a0) : (t1, a1) : xs) =
-  (Interval t0 t1, a0) : intervals' ((t1, a1) : xs)
+  (TimeInterval t0 t1, a0) : intervals' ((t1, a1) : xs)
 intervals' [(_, _)] = []
 intervals' [] = []
 
-states :: (Issue a) => a -> Maybe (M.Map Interval Status)
+states :: (Issue a) => a -> Maybe (M.Map TimeInterval Status)
 states i = do
   cs <- changelog i
   return

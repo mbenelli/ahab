@@ -24,6 +24,7 @@ library
       , Ahab.Jira.Api
       , Ahab.Jira.CustomTypes
       , Ahab.Jira.Types
+      , Ahab.Time
       , Ahab.Transform
       , Ahab.Types
       , Ahab.Utils

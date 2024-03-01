@@ -27,34 +27,13 @@ import qualified Ahab.Jira.Types as JT
     UserDetails (..),
     Version (..),
   )
+import Ahab.Time (parseTime)
 import BasicPrelude hiding (id, isPrefixOf, lookup)
 import Codec.Rot13
 import Data.HashMap.Strict (filterWithKey)
-import Data.Text (isPrefixOf, unpack)
-import Data.Time (NominalDiffTime, UTCTime, diffUTCTime, zonedTimeToUTC)
-import Data.Time.Format (defaultTimeLocale, parseTimeM)
+import Data.Text (isPrefixOf)
+import Data.Time (UTCTime)
 import GHC.Generics
-
-data Interval = Interval !UTCTime !UTCTime
-  deriving (Show, Eq)
-
-instance Ord Interval where
-  (<) a b = begin a < begin b
-  (<=) a b = a == b || a < b
-
-begin :: Interval -> UTCTime
-begin (Interval b _) = b
-
-end :: Interval -> UTCTime
-end (Interval _ e) = e
-
-duration :: Interval -> NominalDiffTime
-duration (Interval b e) = diffUTCTime e b
-
-parseTime :: Text -> Maybe UTCTime
-parseTime s = do
-  t <- parseTimeM False defaultTimeLocale "%Y-%m-%dT%H:%M:%S%Q%z" $ unpack s
-  return $ zonedTimeToUTC t
 
 newtype Status = Status Text
   deriving (Eq, Hashable, Show, Generic)
