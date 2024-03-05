@@ -2,12 +2,12 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 -- |
--- Module: Ahab.Time
+-- Module: Kipu.Time
 -- Description: Time Utilities 
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
 -- Maintainer: mbenelli@fastmail.com
-module Ahab.Time where
+module Kipu.Time where
 
 import BasicPrelude
 import qualified Data.Map as M

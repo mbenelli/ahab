@@ -3,19 +3,19 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 -- |
--- Module: Ahab.Utils
+-- Module: Kipu.Utils
 -- Description: Miscellaneous utilities
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
 -- Maintainer: mbenelli@fastmail.com
-module Ahab.Utils where
+module Kipu.Utils where
 
-import Ahab.Client (run)
-import Ahab.Config
-import Ahab.Jira.Api
-import Ahab.Jira.CustomTypes
-import qualified Ahab.Jira.Types as JT
-import Ahab.Types
+import Kipu.Client (run)
+import Kipu.Config
+import Kipu.Jira.Api
+import Kipu.Jira.CustomTypes
+import qualified Kipu.Jira.Types as JT
+import Kipu.Types
 import BasicPrelude
 import Data.Aeson (FromJSON, ToJSON, eitherDecode)
 import Data.Aeson.Text (encodeToLazyText)

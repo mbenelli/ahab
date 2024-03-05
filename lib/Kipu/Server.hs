@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeOperators #-}
 
 -- |
--- Module: Ahab.Server
+-- Module: Kipu.Server
 -- Description: Web Server
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
@@ -11,10 +11,10 @@
 --
 -- Simple web server inteded to be used for handling webhooks.
 -- Still a work in progress.
-module Ahab.Server where
+module Kipu.Server where
 
-import Ahab.Jira.CustomTypes (IssueBean)
-import Ahab.Jira.Types (Changelog, UserDetails)
+import Kipu.Jira.CustomTypes (IssueBean)
+import Kipu.Jira.Types (Changelog, UserDetails)
 import Data.Aeson
 import Data.Text
 import GHC.Generics

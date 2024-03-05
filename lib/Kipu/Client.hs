@@ -3,17 +3,17 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 -- |
--- Module: Ahab.Client
+-- Module: Kipu.Client
 -- Description: HTTP REST client
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
 -- Maintainer: mbenelli@fastmail.com
-module Ahab.Client where
+module Kipu.Client where
 
-import Ahab.Config
-import Ahab.Jira.Api
-import Ahab.Jira.CustomTypes
-import qualified Ahab.Jira.Types as JT
+import Kipu.Config
+import Kipu.Jira.Api
+import Kipu.Jira.CustomTypes
+import qualified Kipu.Jira.Types as JT
 import BasicPrelude
 import Data.Default (Default (def))
 import Data.Text (append, pack, unpack)

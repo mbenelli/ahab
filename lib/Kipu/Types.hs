@@ -5,18 +5,18 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 -- |
--- Module: Ahab.Types
+-- Module: Kipu.Types
 -- Description: Types definitions
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
 -- Maintainer: mbenelli@fastmail.com
 --
--- Type definitios for Ahab project.
+-- Type definitios for Kipu project.
 -- Most important types are 'Change' and 'Issue'.
-module Ahab.Types where
+module Kipu.Types where
 
-import Ahab.Jira.CustomTypes
-import qualified Ahab.Jira.Types as JT
+import Kipu.Jira.CustomTypes
+import qualified Kipu.Jira.Types as JT
   ( ChangeDetails (..),
     Changelog (..),
     IssueTypeDetails (..),
@@ -27,7 +27,7 @@ import qualified Ahab.Jira.Types as JT
     UserDetails (..),
     Version (..),
   )
-import Ahab.Time (parseTime)
+import Kipu.Time (parseTime)
 import BasicPrelude hiding (id, isPrefixOf, lookup)
 import Codec.Rot13
 import Data.HashMap.Strict (filterWithKey)

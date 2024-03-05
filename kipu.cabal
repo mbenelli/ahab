@@ -1,5 +1,5 @@
 cabal-version:      3.0
-name:               ahab
+name:               kipu
 version:            0.1.0.0
 -- synopsis:
 -- description:
@@ -18,16 +18,16 @@ common warnings
 library
     import:           warnings
     exposed-modules:
-        Ahab.Client
-      , Ahab.Config
-      , Ahab.Server
-      , Ahab.Jira.Api
-      , Ahab.Jira.CustomTypes
-      , Ahab.Jira.Types
-      , Ahab.Time
-      , Ahab.Transform
-      , Ahab.Types
-      , Ahab.Utils
+        Kipu.Client
+      , Kipu.Config
+      , Kipu.Server
+      , Kipu.Jira.Api
+      , Kipu.Jira.CustomTypes
+      , Kipu.Jira.Types
+      , Kipu.Time
+      , Kipu.Transform
+      , Kipu.Types
+      , Kipu.Utils
     -- other-modules:
     -- other-extensions:
     build-depends:
@@ -56,7 +56,7 @@ library
     hs-source-dirs:   lib
     default-language: Haskell2010
 
-test-suite ahab-test
+test-suite kipu-test
     import:           warnings
     default-language: Haskell2010
     other-modules:
@@ -70,7 +70,7 @@ test-suite ahab-test
     build-depends:
         base ^>=4.17.2.1
       , aeson >= 2.2.1 && < 2.3
-      , ahab
+      , kipu
       , basic-prelude >= 0.7.0 && < 0.8
       , bytestring >= 0.11.5 && < 0.12
       , containers

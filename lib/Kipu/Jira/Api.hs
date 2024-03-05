@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeOperators #-}
 
 -- |
--- Module: Ahab.Jira.Api
+-- Module: Kipu.Jira.Api
 -- Description: Subset of Jira API
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
@@ -13,11 +13,11 @@
 -- Client interface for a subset of Jira API.
 -- The most important API call is the one to "search", that
 -- allow the user to make JQL queries.
-module Ahab.Jira.Api where
+module Kipu.Jira.Api where
 
-import Ahab.Config
-import Ahab.Jira.CustomTypes (IssueBean, IssueCoreObject)
-import qualified Ahab.Jira.Types as JT
+import Kipu.Config
+import Kipu.Jira.CustomTypes (IssueBean, IssueCoreObject)
+import qualified Kipu.Jira.Types as JT
 import BasicPrelude
 import Data.Aeson
 import Data.List as L

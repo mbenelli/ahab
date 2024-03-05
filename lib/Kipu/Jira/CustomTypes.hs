@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 -- |
--- Module: Ahab.Jira.CustomTypes
+-- Module: Kipu.Jira.CustomTypes
 -- Description: Custom definions of some Jira types
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
@@ -13,9 +13,9 @@
 -- types that should work in most situation.
 -- User of the library may choose to define alternatives
 -- to the types defined here.
-module Ahab.Jira.CustomTypes where
+module Kipu.Jira.CustomTypes where
 
-import Ahab.Jira.Types
+import Kipu.Jira.Types
 import Data.Aeson
 import Data.Text
 import GHC.Generics

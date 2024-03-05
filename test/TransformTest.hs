@@ -10,11 +10,11 @@
 -- Maintainer: mbenelli@fastmail.com
 module TransformTest where
 
-import qualified Ahab.Jira.CustomTypes as CT
-import Ahab.Time (TimeInterval (..), parseTime)
-import Ahab.Transform
-import qualified Ahab.Types as T
-import qualified Ahab.Utils as U
+import qualified Kipu.Jira.CustomTypes as CT
+import Kipu.Time (TimeInterval (..), parseTime)
+import Kipu.Transform
+import qualified Kipu.Types as T
+import qualified Kipu.Utils as U
 import BasicPrelude
 import qualified Data.Map as M
 import Data.Time (UTCTime, addUTCTime, getCurrentTime, nominalDay)

@@ -8,7 +8,7 @@
 -- Maintainer: mbenelli@fastmail.com
 module ConfigTest where
 
-import Ahab.Config
+import Kipu.Config
 import Test.HUnit
 
 sampleConfig :: Config

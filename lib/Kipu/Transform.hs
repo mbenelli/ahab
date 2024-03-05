@@ -2,15 +2,15 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 -- |
--- Module: Ahab.Transformer
+-- Module: Kipu.Transformer
 -- Description: Data transformations
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
 -- Maintainer: mbenelli@fastmail.com
-module Ahab.Transform where
+module Kipu.Transform where
 
-import Ahab.Time
-import Ahab.Types
+import Kipu.Time
+import Kipu.Types
 import BasicPrelude
 import qualified Data.HashMap.Strict as H
 import qualified Data.Map as M

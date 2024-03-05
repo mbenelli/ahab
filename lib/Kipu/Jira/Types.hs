@@ -5,12 +5,12 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 -- |
--- Module: Ahab.Jira.Types
+-- Module: Kipu.Jira.Types
 -- Description: Jira types
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
 -- Maintainer: mbenelli@fastmail.com
-module Ahab.Jira.Types where
+module Kipu.Jira.Types where
 
 import BasicPrelude
 import Data.Aeson

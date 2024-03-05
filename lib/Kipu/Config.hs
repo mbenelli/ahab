@@ -2,12 +2,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 -- |
--- Module: Ahab.Config
+-- Module: Kipu.Config
 -- Description: Configuration
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
 -- Maintainer: mbenelli@fastmail.com
-module Ahab.Config where
+module Kipu.Config where
 
 import Data.Text as T
 import Data.Yaml

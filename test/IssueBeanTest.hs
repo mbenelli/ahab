@@ -9,8 +9,8 @@
 -- Maintainer: mbenelli@fastmail.com
 module IssueBeanTest where
 
-import qualified Ahab.Jira.CustomTypes as CT
-import qualified Ahab.Utils as U
+import qualified Kipu.Jira.CustomTypes as CT
+import qualified Kipu.Utils as U
 import Test.HUnit
 
 issueBeanTest :: [Test]
