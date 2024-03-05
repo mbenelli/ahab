@@ -56,6 +56,15 @@ end (TimeInterval _ e) = e
 duration :: TimeInterval -> NominalDiffTime
 duration (TimeInterval b e) = diffUTCTime e b
 
+intersection :: TimeInterval -> TimeInterval -> Maybe TimeInterval
+intersection x y
+  | end x < begin y || end y < begin x = Nothing
+  | begin x < begin y && end y < end x = Just y
+  | begin y < begin x && end x < end y = Just x
+  | begin x < begin y && end x < end y = Just $ timeInterval (begin y) (end x)
+  | begin y < begin x && end y < end x = Just $ timeInterval (begin x) (end y)
+  | otherwise = Nothing
+
 -- | Return the working days included in the interval.
 --
 -- Weekends are excluded, beginning and end days are included in the count.
