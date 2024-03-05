@@ -3,7 +3,7 @@
 
 -- |
 -- Module: Kipu.Time
--- Description: Time Utilities 
+-- Description: Time Utilities
 -- Copyright: (c) Marco Benelli 2024
 -- License: ISC
 -- Maintainer: mbenelli@fastmail.com
@@ -25,8 +25,23 @@ import Data.Time.Calendar (DayOfWeek (Monday), Year)
 import Data.Time.Calendar.WeekDate (FirstWeekType (..), WeekOfYear, toWeekCalendar)
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 
+-- | Parse ISO 8601 time
+--
+-- Do not use `iso8601ParseM` because it use different time zone
+-- notation.
+parseTime :: Text -> Maybe UTCTime
+parseTime s = do
+  t <- parseTimeM False defaultTimeLocale "%Y-%m-%dT%H:%M:%S%Q%z" $ unpack s
+  return $ zonedTimeToUTC t
+
 data TimeInterval = TimeInterval !UTCTime !UTCTime
   deriving (Show, Eq)
+
+timeInterval :: UTCTime -> UTCTime -> TimeInterval
+timeInterval a b = case compare a b of
+  LT -> TimeInterval a b
+  EQ -> TimeInterval a b
+  GT -> TimeInterval b a
 
 instance Ord TimeInterval where
   (<) a b = begin a < begin b
@@ -40,11 +55,6 @@ end (TimeInterval _ e) = e
 
 duration :: TimeInterval -> NominalDiffTime
 duration (TimeInterval b e) = diffUTCTime e b
-
-parseTime :: Text -> Maybe UTCTime
-parseTime s = do
-  t <- parseTimeM False defaultTimeLocale "%Y-%m-%dT%H:%M:%S%Q%z" $ unpack s
-  return $ zonedTimeToUTC t
 
 -- | Return the working days included in the interval.
 --
@@ -64,7 +74,7 @@ workingDays i =
     b = utctDay $ begin i
     e = utctDay $ end i
 
--- | Partition a list by week 
+-- | Partition a list by week
 -- Given a fuction that maps each element of the list to a date,
 -- returns the elements grouped by week.
 partitionByWeek :: (a -> UTCTime) -> [a] -> M.Map (Year, WeekOfYear) [a]
