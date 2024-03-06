@@ -23,6 +23,7 @@ library
       , Kipu.Server
       , Kipu.Jira.Api
       , Kipu.Jira.CustomTypes
+      , Kipu.Jira.InsightTypes
       , Kipu.Jira.Types
       , Kipu.Time
       , Kipu.Transform

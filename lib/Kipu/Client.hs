@@ -10,13 +10,13 @@
 -- Maintainer: mbenelli@fastmail.com
 module Kipu.Client where
 
+import BasicPrelude
+import Data.Default (Default (def))
+import Data.Text (append, pack, unpack)
 import Kipu.Config
 import Kipu.Jira.Api
 import Kipu.Jira.CustomTypes
 import qualified Kipu.Jira.Types as JT
-import BasicPrelude
-import Data.Default (Default (def))
-import Data.Text (append, pack, unpack)
 import Network.Connection (TLSSettings (TLSSettings))
 import Network.HTTP.Client (Manager, newManager)
 import Network.HTTP.Client.TLS (mkManagerSettings, newTlsManager)
@@ -135,6 +135,12 @@ withChangelog x = withContinuation $ changelogQuery x
 
 createIssue :: CreateIssueRequest -> IO ()
 createIssue x = withContinuation (createIssue' x) id
+
+withWorkspaceid :: (Show a) => (Text -> a) -> IO ()
+withWorkspaceid = withContinuation workspaceidQuery
+
+withAssetSearchResult :: (Show a) => Text -> (InsightSearchResponse -> a) -> IO ()
+withAssetSearchResult q = withContinuation $ assetQuery q
 
 collectSearchResult ::
   Text ->

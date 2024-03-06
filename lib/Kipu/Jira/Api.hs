@@ -15,20 +15,22 @@
 -- allow the user to make JQL queries.
 module Kipu.Jira.Api where
 
-import Kipu.Config
-import Kipu.Jira.CustomTypes (IssueBean, IssueCoreObject)
-import qualified Kipu.Jira.Types as JT
 import BasicPrelude
 import Data.Aeson
 import Data.List as L
 import Data.Proxy (Proxy (..))
 import Data.Text as T
 import GHC.Generics
+import Kipu.Config
+import Kipu.Jira.CustomTypes (IssueBean, IssueCoreObject)
+import qualified Kipu.Jira.InsightTypes as JI
+import qualified Kipu.Jira.Types as JT
 import Servant.API
   ( Capture,
     Get,
     Header,
     JSON,
+    PlainText,
     Post,
     QueryParam,
     ReqBody,
@@ -59,6 +61,36 @@ newtype CreateIssueRequest = CreateIssueRequest
   deriving (Show, Generic)
 
 instance ToJSON CreateIssueRequest
+
+type AssetSearchResponse = Object
+
+data AssetSearchResponse' = AssetSearchResponse'
+  { asset_id :: !(Maybe Text),
+    asset_title :: !(Maybe Text),
+    asset_type :: !(Maybe Text),
+    asset_properties :: !(Maybe Object),
+    asset_definitions :: !(Maybe Object),
+    asset_additionalProperties :: !(Maybe Bool),
+    asset_required :: !(Maybe Object)
+  }
+  deriving (Show, Generic)
+
+instance FromJSON AssetSearchResponse' where
+  parseJSON = genericParseJSON JT.options
+
+data InsightSearchResponse = InsightSearchResponse
+  { insightSearchResponse_objectEntries :: ![JI.ObjectEntry],
+    insightSearchResponse_objectTypeAttributes :: ![Maybe Object],
+    insightSearchResponse_iql :: !(Maybe Text),
+    insightSearchResponse_qlQuery :: !(Maybe Text),
+    insightSearchResponse_startIndex :: !Int,
+    insightSearchResponse_toIndex :: !Int,
+    insightSearchResponse_totalFilterCount :: !(Maybe Int)
+  }
+  deriving (Show, Generic)
+
+instance FromJSON InsightSearchResponse where
+  parseJSON = genericParseJSON JT.options
 
 -- API
 
@@ -115,6 +147,23 @@ type API =
       :> Header "X-AUSERNAME" Text
       :> Header "Authorization" Text
       :> Get '[JSON] JT.PageBeanChangelog
+    :<|> "rest"
+      :> "servicedeskapi"
+      :> "assets"
+      :> "workspace"
+      :> Header "X-USERNAME" Text
+      :> Header "Authorization" Text
+      :> Get '[PlainText] Text
+    :<|> "rest"
+      :> "insight"
+      :> "1.0"
+      :> "iql"
+      :> "objects"
+      :> QueryParam "qlQuery" Text
+      :> QueryParam "page" Int
+      :> Header "X-USERNAME" Text
+      :> Header "Authorization" Text
+      :> Get '[JSON] InsightSearchResponse -- AssetSearchResponse
 
 api :: Proxy API
 api = Proxy
@@ -134,7 +183,16 @@ issueTypes :: Maybe Text -> Maybe Text -> ClientM [JT.IssueTypeDetails]
 createIssueReq :: CreateIssueRequest -> Maybe Text -> Maybe Text -> ClientM IssueBean
 issue :: Text -> Maybe Text -> Maybe Text -> ClientM IssueBean
 changelogs :: Text -> Maybe Text -> Maybe Text -> ClientM JT.PageBeanChangelog
-search :<|> getFields :<|> issueTypes :<|> createIssueReq :<|> issue :<|> changelogs = client api
+workspaceid :: Maybe Text -> Maybe Text -> ClientM Text
+assetSearch :: Maybe Text -> Maybe Int -> Maybe Text -> Maybe Text -> ClientM InsightSearchResponse
+search
+  :<|> getFields
+  :<|> issueTypes
+  :<|> createIssueReq
+  :<|> issue
+  :<|> changelogs
+  :<|> workspaceid
+  :<|> assetSearch = client api
 
 query :: Text -> Text -> Config -> ClientM SearchResponse
 query q f cfg =
@@ -190,5 +248,19 @@ changelogQuery :: Text -> Config -> ClientM JT.PageBeanChangelog
 changelogQuery x cfg =
   changelogs
     x
+    (Just $ user cfg)
+    (Just $ auth cfg)
+
+workspaceidQuery :: Config -> ClientM Text
+workspaceidQuery cfg =
+  workspaceid
+    (Just $ user cfg)
+    (Just $ auth cfg)
+
+assetQuery :: Text -> Config -> ClientM InsightSearchResponse
+assetQuery x cfg =
+  assetSearch
+    (Just x)
+    Nothing
     (Just $ user cfg)
     (Just $ auth cfg)
