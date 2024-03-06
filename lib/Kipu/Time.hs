@@ -9,7 +9,7 @@
 -- Maintainer: mbenelli@fastmail.com
 module Kipu.Time where
 
-import BasicPrelude
+import BasicPrelude hiding (union)
 import qualified Data.Map as M
 import Data.Text (unpack)
 import Data.Time
@@ -58,12 +58,23 @@ duration (TimeInterval b e) = diffUTCTime e b
 
 intersection :: TimeInterval -> TimeInterval -> Maybe TimeInterval
 intersection x y
-  | end x < begin y || end y < begin x = Nothing
   | begin x < begin y && end y < end x = Just y
   | begin y < begin x && end x < end y = Just x
   | begin x < begin y && end x < end y = Just $ timeInterval (begin y) (end x)
   | begin y < begin x && end y < end x = Just $ timeInterval (begin x) (end y)
   | otherwise = Nothing
+
+intersection' :: [TimeInterval] -> [TimeInterval] -> [TimeInterval]
+intersection' (x : xs) ys = mapMaybe (intersection x) ys ++ intersection' xs ys
+intersection' [] _ = []
+
+union :: TimeInterval -> TimeInterval -> [TimeInterval]
+union x y
+  | begin x < begin y && end y < end x = [x]
+  | begin y < begin x && end x < end y = [y]
+  | begin x < begin y && end x < end y = [timeInterval (begin x) (end y)]
+  | begin y < begin x && end y < end x = [timeInterval (begin y) (end x)]
+  | otherwise = [x, y]
 
 -- | Return the working days included in the interval.
 --
