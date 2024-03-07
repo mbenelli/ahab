@@ -76,6 +76,15 @@ union x y
   | begin y < begin x && end y < end x = [timeInterval (begin y) (end x)]
   | otherwise = [x, y]
 
+union' :: [TimeInterval] -> [TimeInterval]
+union' (x0 : x1 : xs) =
+  let u = (union x0 x1)
+   in case length u of
+        1 -> union' $ u ++ xs
+        _ -> union' $ (last u) : xs
+union' [] = []
+union' (x : []) = [x]
+
 -- | Return the working days included in the interval.
 --
 -- Weekends are excluded, beginning and end days are included in the count.
