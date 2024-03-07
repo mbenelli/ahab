@@ -58,10 +58,16 @@ duration (TimeInterval b e) = diffUTCTime e b
 
 intersection :: TimeInterval -> TimeInterval -> Maybe TimeInterval
 intersection x y
-  | begin x < begin y && end y < end x = Just y
-  | begin y < begin x && end x < end y = Just x
-  | begin x < begin y && end x < end y = Just $ timeInterval (begin y) (end x)
-  | begin y < begin x && end y < end x = Just $ timeInterval (begin x) (end y)
+  | begin x <= begin y && end y <= end x = Just y
+  | begin y <= begin x && end x <= end y = Just x
+  | begin x == begin y && end x <= end y = Just x
+  | begin x == begin y && end y <= end x = Just y
+  | begin x <= begin y && end x == end y = Just y
+  | begin y <= begin x && end x == end y = Just x
+  | begin x <= begin y && begin y < end x && end x <= end y =
+      Just $ timeInterval (begin y) (end x)
+  | begin y <= begin x && begin x < end y && end y <= end x =
+      Just $ timeInterval (begin x) (end y)
   | otherwise = Nothing
 
 intersection' :: [TimeInterval] -> [TimeInterval] -> [TimeInterval]

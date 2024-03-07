@@ -12,8 +12,14 @@ import BasicPrelude
 import ConfigTest (configTest)
 import IssueBeanTest (issueBeanTest)
 import Test.HUnit
+import TimeTest (timeTest)
 import TransformTest (transformTest)
 
 main :: IO ()
 main = do
-  runTestTTAndExit $ TestList $ configTest ++ issueBeanTest ++ transformTest
+  runTestTTAndExit
+    $ TestList
+    $ configTest
+    ++ issueBeanTest
+    ++ transformTest
+    ++ timeTest
