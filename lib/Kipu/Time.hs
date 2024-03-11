@@ -59,6 +59,9 @@ duration (TimeInterval b e) = diffUTCTime e b
 contains :: TimeInterval -> UTCTime -> Bool
 contains ti t = (begin ti <= t) && (t < end ti)
 
+contains' :: TimeInterval -> UTCTime -> Bool
+contains' ti t = (begin ti <= t) && (t <= end ti)
+
 intersection :: TimeInterval -> TimeInterval -> Maybe TimeInterval
 intersection x y
   | begin x <= begin y && end y <= end x = Just y
@@ -125,7 +128,7 @@ partitionByWeek t =
     M.empty
 
 chooseInterval :: [TimeInterval] -> UTCTime -> Maybe TimeInterval
-chooseInterval tis t = find (\i -> contains i t) tis
+chooseInterval tis t = find (\i -> contains' i t) tis
 
 -- | Partition a list by an interval set.
 partitionByIntervals :: [TimeInterval] -> (a -> UTCTime) -> [a] -> M.Map TimeInterval [a]
