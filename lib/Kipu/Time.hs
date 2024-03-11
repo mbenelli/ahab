@@ -56,6 +56,9 @@ end (TimeInterval _ e) = e
 duration :: TimeInterval -> NominalDiffTime
 duration (TimeInterval b e) = diffUTCTime e b
 
+contains :: TimeInterval -> UTCTime -> Bool
+contains ti t = (begin ti <= t) && (t < end ti)
+
 intersection :: TimeInterval -> TimeInterval -> Maybe TimeInterval
 intersection x y
   | begin x <= begin y && end y <= end x = Just y
@@ -118,5 +121,19 @@ partitionByWeek t =
     ( \m x ->
         let (y, w, _) = toWeekCalendar FirstWholeWeek Monday $ utctDay $ t x
          in M.insertWith (++) (y, w) [x] m
+    )
+    M.empty
+
+chooseInterval :: [TimeInterval] -> UTCTime -> Maybe TimeInterval
+chooseInterval tis t = find (\i -> contains i t) tis
+
+-- | Partition a list by an interval set.
+partitionByIntervals :: [TimeInterval] -> (a -> UTCTime) -> [a] -> M.Map TimeInterval [a]
+partitionByIntervals is t =
+  foldl'
+    ( \m x ->
+        case chooseInterval is (t x) of
+          Nothing -> m
+          Just i -> M.insertWith (++) i [x] m
     )
     M.empty
