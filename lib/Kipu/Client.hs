@@ -16,6 +16,7 @@ import Data.Text (append, pack, unpack)
 import Kipu.Config
 import Kipu.Jira.Api
 import Kipu.Jira.CustomTypes
+import qualified Kipu.Jira.InsightTypes as IT
 import qualified Kipu.Jira.Types as JT
 import Network.Connection (TLSSettings (TLSSettings))
 import Network.HTTP.Client (Manager, newManager)
@@ -139,8 +140,8 @@ createIssue x = withContinuation (createIssue' x) id
 withWorkspaceid :: (Show a) => (Text -> a) -> IO ()
 withWorkspaceid = withContinuation workspaceidQuery
 
-withAssetSearchResult :: (Show a) => Text -> (InsightSearchResponse -> a) -> IO ()
-withAssetSearchResult q = withContinuation $ assetQuery q
+withAssetSearchResult :: (Show a) => Text -> Int -> (InsightSearchResponse -> a) -> IO ()
+withAssetSearchResult q i = withContinuation $ assetQuery q i
 
 collectSearchResult ::
   Text ->
@@ -160,6 +161,24 @@ collectSearchResult q i xs = do
             (length (xs ++ (issues r)))
             (xs ++ (issues r))
 
+collectAssetResult :: Text -> Int -> [IT.ObjectEntry] -> IO (Either Text [IT.ObjectEntry])
+collectAssetResult q i xs = do
+  res <- run $ assetQuery q i
+  case res of
+    Left e -> return $ Left e
+    Right r ->
+      let entries = (insightSearchResponse_objectEntries r)
+       in if null entries
+            then return $ Right xs
+            else
+              collectAssetResult
+                q
+                ( i
+                    + 1 -- (length (xs ++ entries))
+                )
+                (xs ++ entries)
+
+-- | Collect search results with a maximum number of items to collect.
 collectSearchResult' :: Text -> Int -> Int -> [IssueBean] -> IO (Either Text [IssueBean])
 collectSearchResult' q i j xs = do
   res <- run $ searchQuery q i defaultFields

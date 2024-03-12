@@ -257,10 +257,10 @@ workspaceidQuery cfg =
     (Just $ user cfg)
     (Just $ auth cfg)
 
-assetQuery :: Text -> Config -> ClientM InsightSearchResponse
-assetQuery x cfg =
+assetQuery :: Text -> Int -> Config -> ClientM InsightSearchResponse
+assetQuery x i cfg =
   assetSearch
     (Just x)
-    Nothing
+    (Just i)
     (Just $ user cfg)
     (Just $ auth cfg)
