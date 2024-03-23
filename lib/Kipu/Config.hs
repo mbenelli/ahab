@@ -30,7 +30,7 @@ auth :: Config -> Text
 auth c = T.unwords [authorization c, token c]
 
 defaultConfigFile :: IO String
-defaultConfigFile = getXdgDirectory XdgConfig "ahab/config.yaml"
+defaultConfigFile = getXdgDirectory XdgConfig "kipu/config.yaml"
 
 readConfig :: String -> IO (Either ParseException Config)
 readConfig = decodeFileEither
