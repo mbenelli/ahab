@@ -15,10 +15,10 @@
 -- to the types defined here.
 module Kipu.Jira.CustomTypes where
 
-import Kipu.Jira.Types
 import Data.Aeson
 import Data.Text
 import GHC.Generics
+import Kipu.Jira.Types
 
 data IssueObject = IssueObject
   { issueObject_project :: !Project,
@@ -34,7 +34,7 @@ data IssueObject = IssueObject
     issueObject_fixVersions :: !(Maybe [Version]),
     issueObject_versions :: !(Maybe [Version]),
     issueObject_components :: !(Maybe [Component]),
-    issueObject_issuelink :: !(Maybe IssueLink),
+    issueObject_issuelinks :: !(Maybe [IssueLink]),
     issueObject_resolution :: !(Maybe Resolution),
     issueObject_resolutiondate :: !(Maybe Text)
   }

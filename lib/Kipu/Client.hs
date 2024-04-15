@@ -99,7 +99,7 @@ defaultFields =
     "fixVersions",
     "versions",
     "components",
-    "issuelink",
+    "issuelinks",
     "resolution",
     "resolutiondate"
   ]

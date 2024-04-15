@@ -15,11 +15,20 @@
 -- Most important types are 'Change' and 'Issue'.
 module Kipu.Types where
 
+import BasicPrelude hiding (id, isPrefixOf, lookup)
+import Codec.Rot13
+import Data.HashMap.Strict (filterWithKey)
+import Data.Text (isPrefixOf)
+import Data.Time (UTCTime)
+import GHC.Generics
 import Kipu.Jira.CustomTypes
 import qualified Kipu.Jira.Types as JT
   ( ChangeDetails (..),
     Changelog (..),
+    IssueLink (..),
     IssueTypeDetails (..),
+    LinkType (..),
+    LinkedIssue (..),
     PageOfChangelogs (..),
     Project (..),
     Resolution (..),
@@ -28,12 +37,6 @@ import qualified Kipu.Jira.Types as JT
     Version (..),
   )
 import Kipu.Time (parseTime)
-import BasicPrelude hiding (id, isPrefixOf, lookup)
-import Codec.Rot13
-import Data.HashMap.Strict (filterWithKey)
-import Data.Text (isPrefixOf)
-import Data.Time (UTCTime)
-import GHC.Generics
 
 newtype Status = Status Text
   deriving (Eq, Hashable, Show, Generic)
@@ -69,6 +72,7 @@ class Issue a where
   reporter :: a -> Maybe User
   resolution :: a -> Maybe Resolution
   resolutiondate :: a -> Maybe UTCTime
+  links :: a -> Maybe [Link]
   fixversion :: a -> Maybe [Text]
   versions :: a -> Maybe [Text]
   components :: a -> Maybe [Text]
@@ -88,6 +92,7 @@ data CoreIssue = CoreIssue
     coreIssue_reporter :: !(Maybe User),
     coreIssue_resolution :: !(Maybe Resolution),
     coreIssue_resolutiondate :: !(Maybe UTCTime),
+    coreIssue_links :: !(Maybe [Link]),
     coreIssue_fixversion :: !(Maybe [Text]),
     coreIssue_versions :: !(Maybe [Text]),
     coreIssue_components :: !(Maybe [Text]),
@@ -109,6 +114,7 @@ instance Issue CoreIssue where
   resolution = coreIssue_resolution
   resolutiondate = coreIssue_resolutiondate
   fixversion = coreIssue_fixversion
+  links = coreIssue_links
   versions = coreIssue_versions
   components = coreIssue_components
   changelog = coreIssue_changelog
@@ -136,21 +142,37 @@ toIssue x = do
         coreIssue_created = _created,
         coreIssue_creator = pseudonomizeUser _creator,
         coreIssue_description = issueObject_description obj,
-        coreIssue_assignee = issueObject_assignee obj
-          >>= Just . pseudonomizeUser,
-        coreIssue_reporter = issueObject_reporter obj
-          >>= Just . pseudonomizeUser,
-        coreIssue_resolution = issueObject_resolution obj
-          >>= Just . Resolution . JT.resolution_name,
-        coreIssue_resolutiondate = issueObject_resolutiondate obj
-          >>= parseTime,
-        coreIssue_fixversion = issueObject_fixVersions obj
-          >>= \vs -> Just $ map JT.version_name vs,
-        coreIssue_versions = issueObject_versions obj
-          >>= \vs -> Just $ map JT.version_name vs,
+        coreIssue_assignee =
+          issueObject_assignee obj
+            >>= Just
+            . pseudonomizeUser,
+        coreIssue_reporter =
+          issueObject_reporter obj
+            >>= Just
+            . pseudonomizeUser,
+        coreIssue_resolution =
+          issueObject_resolution obj
+            >>= Just
+            . Resolution
+            . JT.resolution_name,
+        coreIssue_resolutiondate =
+          issueObject_resolutiondate obj
+            >>= parseTime,
+        coreIssue_links =
+          issueObject_issuelinks obj
+            >>= \ls -> Just $ toLinks ls,
+        coreIssue_fixversion =
+          issueObject_fixVersions obj
+            >>= \vs -> Just $ map JT.version_name vs,
+        coreIssue_versions =
+          issueObject_versions obj
+            >>= \vs -> Just $ map JT.version_name vs,
         coreIssue_components = Nothing,
         coreIssue_changelog = getChanges x
       }
+
+-- History
+--
 
 data Change = Change
   { change_timestamp :: !UTCTime,
@@ -194,6 +216,50 @@ toChanges c = do
             }
       )
       items
+
+-- Links
+--
+
+newtype LinkType = LinkType Text
+  deriving (Eq, Hashable, Show, Generic)
+
+data Link = Link
+  { link_type :: !LinkType,
+    link_targetKey :: !Text
+  }
+  deriving (Eq, Show, Generic)
+
+-- | Convert Jira issue links into Links
+toLinks :: [JT.IssueLink] -> [Link]
+toLinks =
+  foldl'
+    ( \r x ->
+        let t = JT.issueLink_type x
+            inward = LinkType $ JT.linkType_inward t
+            outward = LinkType $ JT.linkType_outward t
+         in case JT.issueLink_outwardIssue x of
+              Just o -> (Link outward (JT.linkedIssue_key o)) : r
+              Nothing -> case JT.issueLink_inwardIssue x of
+                Just i -> (Link inward (JT.linkedIssue_key i)) : r
+                Nothing -> r
+    )
+    []
+
+-- | Convert Jira issue linkes into links, partitioning inward and outwards
+inOutLinks :: [JT.IssueLink] -> ([Link], [Link])
+inOutLinks =
+  foldl'
+    ( \r x ->
+        let t = JT.issueLink_type x
+            inward = LinkType $ JT.linkType_inward t
+            outward = LinkType $ JT.linkType_outward t
+         in case JT.issueLink_outwardIssue x of
+              Just o -> (fst r, (Link outward (JT.linkedIssue_key o)) : (snd r))
+              Nothing -> case JT.issueLink_inwardIssue x of
+                Just i -> ((Link inward (JT.linkedIssue_key i)) : (fst r), (snd r))
+                Nothing -> r
+    )
+    ([], [])
 
 customFields :: HashMap Text Text -> HashMap Text Text
 customFields = filterWithKey (\k _ -> "customfield_" `isPrefixOf` k)

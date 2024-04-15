@@ -467,7 +467,7 @@ instance ToJSON LinkType where
 data LinkedIssue = LinkedIssue
   { linkedIssue_id :: !Text,
     linkedIssue_key :: !Text,
-    linkedIssue_Status :: !Text
+    linkedIssue_Status :: !(Maybe Text)
   }
   deriving (Show, Generic)
 
