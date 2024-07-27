@@ -13,11 +13,11 @@
 -- Still a work in progress.
 module Kipu.Server where
 
-import Kipu.Jira.CustomTypes (IssueBean)
-import Kipu.Jira.Types (Changelog, UserDetails)
 import Data.Aeson
 import Data.Text
 import GHC.Generics
+import Kipu.Jira.CustomTypes (IssueBean)
+import Kipu.Jira.Types (Changelog, UserDetails)
 import Network.Wai.Handler.Warp
 import Servant
 
@@ -35,14 +35,14 @@ instance FromJSON IssueRequest
 
 type API = "issue" :> ReqBody '[JSON] IssueRequest :> Post '[PlainText] Text
 
-processRequest :: IssueRequest -> Text
-processRequest x = pack $ show x
+processRequest :: IssueRequest -> Handler Text
+processRequest x = return $ pack $ show x
 
 api :: Proxy API
 api = Proxy
 
 server :: Server API
-server = return . processRequest
+server = processRequest
 
 app :: Application
 app = serve api server
